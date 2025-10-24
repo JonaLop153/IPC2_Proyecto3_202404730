@@ -8,12 +8,50 @@
       <tipo>Hardware</tipo>
       <valorXhora>1.2</valorXhora>
     </recurso>
+    <recurso id="2">
+      <nombre>Memoria RAM</nombre>
+      <abreviatura>RAM</abreviatura>
+      <metrica>GiB</metrica>
+      <tipo>Hardware</tipo>
+      <valorXhora>0.75</valorXhora>
+    </recurso>
+    <recurso id="3">
+      <nombre>Almacenamiento SSD</nombre>
+      <abreviatura>SSD</abreviatura>
+      <metrica>GB</metrica>
+      <tipo>Hardware</tipo>
+      <valorXhora>0.1</valorXhora>
+    </recurso>
+    <recurso id="4">
+      <nombre>Licencia Windows Server</nombre>
+      <abreviatura>WIN</abreviatura>
+      <metrica>unidades</metrica>
+      <tipo>Software</tipo>
+      <valorXhora>2.5</valorXhora>
+    </recurso>
+    <recurso id="5">
+      <nombre>Base de Datos Oracle</nombre>
+      <abreviatura>ORACLE</abreviatura>
+      <metrica>unidades</metrica>
+      <tipo>Software</tipo>
+      <valorXhora>5.0</valorXhora>
+    </recurso>
   </recursos>
   <categorias>
     <categoria id="1">
       <nombre>Máquinas Virtuales Desarrollo</nombre>
       <descripcion>Configuraciones para entornos de desarrollo y pruebas</descripcion>
       <cargaTrabajo>Desarrollo de software</cargaTrabajo>
+    </categoria>
+    <categoria id="2">
+      <nombre>Máquinas Virtuales Producción</nombre>
+      <descripcion>Configuraciones para entornos de producción</descripcion>
+      <cargaTrabajo>Aplicaciones en producción</cargaTrabajo>
+    </categoria>
+    <categoria id="3">
+      <nombre>Servidores Empresariales</nombre>
+      <descripcion>Configuraciones para servidores empresariales</descripcion>
+      <cargaTrabajo>Cargas de trabajo empresariales</cargaTrabajo>
     </categoria>
   </categorias>
   <configuraciones>
@@ -23,6 +61,39 @@
       <idCategoria>1</idCategoria>
       <recursosConfiguracion>
         <recurso id="1">2.0</recurso>
+        <recurso id="2">4.0</recurso>
+        <recurso id="3">50.0</recurso>
+      </recursosConfiguracion>
+    </configuracion>
+    <configuracion id="2">
+      <nombre>Dev Advanced</nombre>
+      <descripcion>Configuración avanzada para desarrollo</descripcion>
+      <idCategoria>1</idCategoria>
+      <recursosConfiguracion>
+        <recurso id="1">4.0</recurso>
+        <recurso id="2">8.0</recurso>
+        <recurso id="3">100.0</recurso>
+      </recursosConfiguracion>
+    </configuracion>
+    <configuracion id="3">
+      <nombre>Prod Standard</nombre>
+      <descripcion>Configuración estándar para producción</descripcion>
+      <idCategoria>2</idCategoria>
+      <recursosConfiguracion>
+        <recurso id="1">8.0</recurso>
+        <recurso id="2">16.0</recurso>
+        <recurso id="3">200.0</recurso>
+      </recursosConfiguracion>
+    </configuracion>
+    <configuracion id="4">
+      <nombre>Enterprise Basic</nombre>
+      <descripcion>Configuración empresarial básica</descripcion>
+      <idCategoria>3</idCategoria>
+      <recursosConfiguracion>
+        <recurso id="1">16.0</recurso>
+        <recurso id="2">32.0</recurso>
+        <recurso id="3">500.0</recurso>
+        <recurso id="4">1.0</recurso>
       </recursosConfiguracion>
     </configuracion>
   </configuraciones>
@@ -34,6 +105,20 @@
       <direccion>Ciudad de Guatemala</direccion>
       <correoElectronico>contacto@empresaejemplo.com</correoElectronico>
     </cliente>
+    <cliente nit="78901-2">
+      <nombre>Startup Innovadora S.A.</nombre>
+      <usuario>startup_innovadora</usuario>
+      <clave>clave456</clave>
+      <direccion>Antigua Guatemala</direccion>
+      <correoElectronico>info@startupinnovadora.com</correoElectronico>
+    </cliente>
+    <cliente nit="34567-8">
+      <nombre>Corporación Grande S.A.</nombre>
+      <usuario>corporacion_grande</usuario>
+      <clave>corp789</clave>
+      <direccion>Guatemala City</direccion>
+      <correoElectronico>admin@corporaciongrande.com</correoElectronico>
+    </cliente>
   </clientes>
   <instancias>
     <instancia id="1">
@@ -43,32 +128,425 @@
       <fechaInicio>01/01/2025</fechaInicio>
       <estado>Vigente</estado>
     </instancia>
+    <instancia id="2">
+      <idCliente>12345-6</idCliente>
+      <idConfiguracion>2</idConfiguracion>
+      <nombre>Servidor Desarrollo 2</nombre>
+      <fechaInicio>15/01/2025</fechaInicio>
+      <estado>Vigente</estado>
+    </instancia>
+    <instancia id="3">
+      <idCliente>78901-2</idCliente>
+      <idConfiguracion>3</idConfiguracion>
+      <nombre>Servidor Producción</nombre>
+      <fechaInicio>10/01/2025</fechaInicio>
+      <estado>Vigente</estado>
+    </instancia>
+    <instancia id="4">
+      <idCliente>34567-8</idCliente>
+      <idConfiguracion>4</idConfiguracion>
+      <nombre>Servidor Corporativo</nombre>
+      <fechaInicio>20/01/2025</fechaInicio>
+      <estado>Vigente</estado>
+    </instancia>
   </instancias>
   <consumos>
     <consumo idInstancia="1" nitCliente="12345-6">
-      <tiempo>10.5</tiempo>
+      <tiempo>45.5</tiempo>
       <fechaHora>15/01/2025 08:30</fechaHora>
     </consumo>
     <consumo idInstancia="1" nitCliente="12345-6">
-      <tiempo>5.25</tiempo>
-      <fechaHora>16/01/2025 14:15</fechaHora>
+      <tiempo>32.25</tiempo>
+      <fechaHora>20/01/2025 14:15</fechaHora>
+    </consumo>
+    <consumo idInstancia="2" nitCliente="12345-6">
+      <tiempo>28.75</tiempo>
+      <fechaHora>18/01/2025 10:00</fechaHora>
+    </consumo>
+    <consumo idInstancia="3" nitCliente="78901-2">
+      <tiempo>120.0</tiempo>
+      <fechaHora>25/01/2025 16:45</fechaHora>
+    </consumo>
+    <consumo idInstancia="3" nitCliente="78901-2">
+      <tiempo>95.5</tiempo>
+      <fechaHora>30/01/2025 12:30</fechaHora>
     </consumo>
     <consumo idInstancia="1" nitCliente="12345-6">
-      <tiempo>10.5</tiempo>
-      <fechaHora>15/01/2025 08:30</fechaHora>
+      <tiempo>50.25</tiempo>
+      <fechaHora>05/02/2025 09:15</fechaHora>
     </consumo>
-    <consumo idInstancia="1" nitCliente="12345-6">
-      <tiempo>5.25</tiempo>
-      <fechaHora>16/01/2025 14:15</fechaHora>
+    <consumo idInstancia="2" nitCliente="12345-6">
+      <tiempo>35.75</tiempo>
+      <fechaHora>10/02/2025 11:30</fechaHora>
     </consumo>
-    <consumo idInstancia="1" nitCliente="12345-6">
-      <tiempo>10.5</tiempo>
-      <fechaHora>15/01/2025 08:30</fechaHora>
+    <consumo idInstancia="3" nitCliente="78901-2">
+      <tiempo>110.0</tiempo>
+      <fechaHora>15/02/2025 14:20</fechaHora>
     </consumo>
-    <consumo idInstancia="1" nitCliente="12345-6">
-      <tiempo>5.25</tiempo>
-      <fechaHora>16/01/2025 14:15</fechaHora>
+    <consumo idInstancia="4" nitCliente="34567-8">
+      <tiempo>75.5</tiempo>
+      <fechaHora>20/02/2025 16:00</fechaHora>
+    </consumo>
+    <consumo idInstancia="4" nitCliente="34567-8">
+      <tiempo>60.25</tiempo>
+      <fechaHora>25/02/2025 08:45</fechaHora>
     </consumo>
   </consumos>
-  <facturas />
+  <facturas>
+    <factura id="1761329495">
+      <nitCliente>12345-6</nitCliente>
+      <fechaEmision>24/10/2025</fechaEmision>
+      <montoTotal>1406.6</montoTotal>
+      <detalles>
+        <detalle>
+          <idInstancia>1</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 1</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>2.0</cantidad>
+          <tiempoConsumido>45.5</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>109.2</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>1</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 1</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>4.0</cantidad>
+          <tiempoConsumido>45.5</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>136.5</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>1</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 1</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>50.0</cantidad>
+          <tiempoConsumido>45.5</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>227.5</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>1</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 1</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>2.0</cantidad>
+          <tiempoConsumido>32.25</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>77.39999999999999</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>1</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 1</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>4.0</cantidad>
+          <tiempoConsumido>32.25</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>96.75</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>1</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 1</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>50.0</cantidad>
+          <tiempoConsumido>32.25</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>161.25</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 2</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>4.0</cantidad>
+          <tiempoConsumido>28.75</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>138.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 2</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>8.0</cantidad>
+          <tiempoConsumido>28.75</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>172.5</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 2</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>100.0</cantidad>
+          <tiempoConsumido>28.75</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>287.5</costoTotal>
+        </detalle>
+      </detalles>
+    </factura>
+    <factura id="1761329495">
+      <nitCliente>78901-2</nitCliente>
+      <fechaEmision>24/10/2025</fechaEmision>
+      <montoTotal>8964.8</montoTotal>
+      <detalles>
+        <detalle>
+          <idInstancia>3</idInstancia>
+          <nombreInstancia>Servidor Producción</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>8.0</cantidad>
+          <tiempoConsumido>120.0</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>1152.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>3</idInstancia>
+          <nombreInstancia>Servidor Producción</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>16.0</cantidad>
+          <tiempoConsumido>120.0</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>1440.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>3</idInstancia>
+          <nombreInstancia>Servidor Producción</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>200.0</cantidad>
+          <tiempoConsumido>120.0</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>2400.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>3</idInstancia>
+          <nombreInstancia>Servidor Producción</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>8.0</cantidad>
+          <tiempoConsumido>95.5</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>916.8</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>3</idInstancia>
+          <nombreInstancia>Servidor Producción</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>16.0</cantidad>
+          <tiempoConsumido>95.5</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>1146.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>3</idInstancia>
+          <nombreInstancia>Servidor Producción</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>200.0</cantidad>
+          <tiempoConsumido>95.5</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>1910.0</costoTotal>
+        </detalle>
+      </detalles>
+    </factura>
+    <factura id="1761329654">
+      <nitCliente>12345-6</nitCliente>
+      <fechaEmision>24/10/2025</fechaEmision>
+      <montoTotal>1266.2</montoTotal>
+      <detalles>
+        <detalle>
+          <idInstancia>1</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 1</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>2.0</cantidad>
+          <tiempoConsumido>50.25</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>120.6</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>1</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 1</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>4.0</cantidad>
+          <tiempoConsumido>50.25</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>150.75</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>1</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 1</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>50.0</cantidad>
+          <tiempoConsumido>50.25</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>251.25</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 2</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>4.0</cantidad>
+          <tiempoConsumido>35.75</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>171.6</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 2</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>8.0</cantidad>
+          <tiempoConsumido>35.75</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>214.5</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Servidor Desarrollo 2</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>100.0</cantidad>
+          <tiempoConsumido>35.75</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>357.5</costoTotal>
+        </detalle>
+      </detalles>
+    </factura>
+    <factura id="1761329654">
+      <nitCliente>78901-2</nitCliente>
+      <fechaEmision>24/10/2025</fechaEmision>
+      <montoTotal>4576.0</montoTotal>
+      <detalles>
+        <detalle>
+          <idInstancia>3</idInstancia>
+          <nombreInstancia>Servidor Producción</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>8.0</cantidad>
+          <tiempoConsumido>110.0</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>1056.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>3</idInstancia>
+          <nombreInstancia>Servidor Producción</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>16.0</cantidad>
+          <tiempoConsumido>110.0</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>1320.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>3</idInstancia>
+          <nombreInstancia>Servidor Producción</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>200.0</cantidad>
+          <tiempoConsumido>110.0</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>2200.0</costoTotal>
+        </detalle>
+      </detalles>
+    </factura>
+    <factura id="1761329654">
+      <nitCliente>34567-8</nitCliente>
+      <fechaEmision>24/10/2025</fechaEmision>
+      <montoTotal>12991.275</montoTotal>
+      <detalles>
+        <detalle>
+          <idInstancia>4</idInstancia>
+          <nombreInstancia>Servidor Corporativo</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>16.0</cantidad>
+          <tiempoConsumido>75.5</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>1449.6</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>4</idInstancia>
+          <nombreInstancia>Servidor Corporativo</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>32.0</cantidad>
+          <tiempoConsumido>75.5</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>1812.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>4</idInstancia>
+          <nombreInstancia>Servidor Corporativo</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>500.0</cantidad>
+          <tiempoConsumido>75.5</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>3775.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>4</idInstancia>
+          <nombreInstancia>Servidor Corporativo</nombreInstancia>
+          <idRecurso>4</idRecurso>
+          <nombreRecurso>Licencia Windows Server</nombreRecurso>
+          <cantidad>1.0</cantidad>
+          <tiempoConsumido>75.5</tiempoConsumido>
+          <costoUnitario>2.5</costoUnitario>
+          <costoTotal>188.75</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>4</idInstancia>
+          <nombreInstancia>Servidor Corporativo</nombreInstancia>
+          <idRecurso>1</idRecurso>
+          <nombreRecurso>Núcleos CPU</nombreRecurso>
+          <cantidad>16.0</cantidad>
+          <tiempoConsumido>60.25</tiempoConsumido>
+          <costoUnitario>1.2</costoUnitario>
+          <costoTotal>1156.8</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>4</idInstancia>
+          <nombreInstancia>Servidor Corporativo</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <cantidad>32.0</cantidad>
+          <tiempoConsumido>60.25</tiempoConsumido>
+          <costoUnitario>0.75</costoUnitario>
+          <costoTotal>1446.0</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>4</idInstancia>
+          <nombreInstancia>Servidor Corporativo</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <cantidad>500.0</cantidad>
+          <tiempoConsumido>60.25</tiempoConsumido>
+          <costoUnitario>0.1</costoUnitario>
+          <costoTotal>3012.5</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>4</idInstancia>
+          <nombreInstancia>Servidor Corporativo</nombreInstancia>
+          <idRecurso>4</idRecurso>
+          <nombreRecurso>Licencia Windows Server</nombreRecurso>
+          <cantidad>1.0</cantidad>
+          <tiempoConsumido>60.25</tiempoConsumido>
+          <costoUnitario>2.5</costoUnitario>
+          <costoTotal>150.625</costoTotal>
+        </detalle>
+      </detalles>
+    </factura>
+  </facturas>
 </database>

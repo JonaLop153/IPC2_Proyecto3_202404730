@@ -567,12 +567,12 @@ class Factura(ModeloBase):
     def __init__(self, nit_cliente, fecha_emision, monto_total, detalles):
         self.id = self._generar_id_factura()
         self.nit_cliente = nit_cliente
-        self.fecha_emision = fecha_emision
+        self.fecha_emision = fecha_emision  # ✅ Debe ser un objeto datetime
         self.monto_total = monto_total
         self.detalles = detalles
     
     def _generar_id_factura(self):
-        return int(datetime.now().timestamp())
+        return int(datetime.now().timestamp())  # ✅ También necesita datetime aquí
     
     def guardar(self):
         root = self._obtener_root()
@@ -581,7 +581,7 @@ class Factura(ModeloBase):
         nueva_factura = ET.SubElement(facturas, 'factura')
         nueva_factura.set('id', str(self.id))
         ET.SubElement(nueva_factura, 'nitCliente').text = self.nit_cliente
-        ET.SubElement(nueva_factura, 'fechaEmision').text = self.fecha_emision.strftime('%d/%m/%Y')
+        ET.SubElement(nueva_factura, 'fechaEmision').text = self.fecha_emision.strftime('%d/%m/%Y')  # ✅ Formatear correctamente
         ET.SubElement(nueva_factura, 'montoTotal').text = str(self.monto_total)
         
         detalles_elem = ET.SubElement(nueva_factura, 'detalles')

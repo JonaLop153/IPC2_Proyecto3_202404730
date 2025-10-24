@@ -1,105 +1,142 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Análisis de Ventas - Tecnologías Chapinas, S.A.{% endblock %}
-
 {% block content %}
-<div class="card">
-    <div class="card-header">
-        <h2>Análisis de Ventas</h2>
+<div class="container">
+    <h2>Análisis de Ventas</h2>
+    
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
     </div>
-    <div class="card-body">
-        {% if error %}
-        <div class="alert alert-danger">
-            <h4>Error</h4>
-            <p>{{ error }}</p>
+    {% endif %}
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Seleccionar Rango de Fechas</h5>
         </div>
-        {% elif categorias_ingresos or configuraciones_ingresos or recursos_ingresos %}
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h5>Resumen General</h5>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_fecha_inicio" class="form-label">Fecha de Inicio</label>
+                            {{ form.fecha_inicio }}
+                        </div>
                     </div>
-                    <div class="card-body">
-                        <p><strong>Rango de Fechas:</strong> {{ fecha_inicio }} a {{ fecha_fin }}</p>
-                        <p><strong>Total de Ingresos:</strong> ${{ total_ingresos }}</p>
+                    <div class="col-md-6">
+                        <div class="mb-3">
+                            <label for="id_fecha_fin" class="form-label">Fecha de Fin</label>
+                            {{ form.fecha_fin }}
+                        </div>
                     </div>
                 </div>
-            </div>
+                <button type="submit" class="btn btn-primary">Generar Análisis</button>
+            </form>
         </div>
-        
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Categorías con Mayor Ingreso</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if categorias_ingresos %}
-                        <ol>
-                            {% for categoria, ingreso in categorias_ingresos %}
-                            <li>{{ categoria }}: ${{ ingreso }}</li>
-                            {% endfor %}
-                        </ol>
-                        {% else %}
-                        <p>No hay datos disponibles para categorías.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Configuraciones con Mayor Ingreso</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if configuraciones_ingresos %}
-                        <ol>
-                            {% for configuracion, ingreso in configuraciones_ingresos %}
-                            <li>{{ configuracion }}: ${{ ingreso }}</li>
-                            {% endfor %}
-                        </ol>
-                        {% else %}
-                        <p>No hay datos disponibles para configuraciones.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Recursos con Mayor Ingreso</h5>
-                    </div>
-                    <div class="card-body">
-                        {% if recursos_ingresos %}
-                        <ol>
-                            {% for recurso, ingreso in recursos_ingresos %}
-                            <li>{{ recurso }}: ${{ ingreso }}</li>
-                            {% endfor %}
-                        </ol>
-                        {% else %}
-                        <p>No hay datos disponibles para recursos.</p>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-        </div>
-        {% else %}
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                {{ form.fecha_inicio.label_tag }}
-                {{ form.fecha_inicio }}
-            </div>
-            <div class="mb-3">
-                {{ form.fecha_fin.label_tag }}
-                {{ form.fecha_fin }}
-            </div>
-            <button type="submit" class="btn btn-primary">Generar Análisis</button>
-        </form>
-        {% endif %}
     </div>
+
+    {% if fecha_inicio and fecha_fin %}
+    <div class="card">
+        <div class="card-header">
+            <h5>Resultados del Análisis: {{ fecha_inicio }} al {{ fecha_fin }}</h5>
+        </div>
+        <div class="card-body">
+            {% if hay_datos %}
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card text-white bg-primary">
+                        <div class="card-body">
+                            <h4>${{ total_ingresos|floatformat:2 }}</h4>
+                            <p>Total de Ingresos</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card text-white bg-success">
+                        <div class="card-body">
+                            <h4>{{ total_facturas }}</h4>
+                            <p>Facturas en el Período</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Categorías que más ingresos generan -->
+            <h6>Categorías por Ingresos</h6>
+            <div class="table-responsive mb-4">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Categoría</th>
+                            <th>Ingresos</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for categoria, ingreso in categorias_ingresos %}
+                        <tr>
+                            <td>{{ categoria }}</td>
+                            <td>${{ ingreso|floatformat:2 }}</td>
+                            <td>{{ ingreso|divisibleby:total_ingresos|default:0|floatformat:1 }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Configuraciones que más ingresos generan -->
+            <h6>Configuraciones por Ingresos</h6>
+            <div class="table-responsive mb-4">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Configuración</th>
+                            <th>Ingresos</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for configuracion, ingreso in configuraciones_ingresos %}
+                        <tr>
+                            <td>{{ configuracion }}</td>
+                            <td>${{ ingreso|floatformat:2 }}</td>
+                            <td>{{ ingreso|divisibleby:total_ingresos|default:0|floatformat:1 }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Recursos que más ingresos generan -->
+            <h6>Recursos por Ingresos</h6>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Recurso</th>
+                            <th>Ingresos</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recurso, ingreso in recursos_ingresos %}
+                        <tr>
+                            <td>{{ recurso }}</td>
+                            <td>${{ ingreso|floatformat:2 }}</td>
+                            <td>{{ ingreso|divisibleby:total_ingresos|default:0|floatformat:1 }}%</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="alert alert-warning">
+                No hay facturas en el rango de fechas seleccionado.
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
 </div>
 {% endblock %}

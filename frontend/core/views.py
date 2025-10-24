@@ -33,15 +33,15 @@ def enviar_mensaje_configuracion(request):
                         headers={'Content-Type': 'application/xml'}
                     )
                     result = response.json()
-                    if result['success']:
+                    if result.get('success'):
                         context = {
                             'form': form,
                             'success': True,
-                            'message': result['message'],
+                            'message': result.get('message', 'Mensaje procesado exitosamente'),
                             'resultados': result.get('resultados', {})
                         }
                     else:
-                        context = {'form': form, 'error': result['message']}
+                        context = {'form': form, 'error': result.get('message', 'Error desconocido')}
             except requests.exceptions.ConnectionError:
                 context = {'form': form, 'error': 'No se pudo conectar con el backend. ¿Está corriendo en el puerto 5000?'}
             except Exception as e:
@@ -69,15 +69,15 @@ def enviar_mensaje_consumo(request):
                         headers={'Content-Type': 'application/xml'}
                     )
                     result = response.json()
-                    if result['success']:
+                    if result.get('success'):
                         context = {
                             'form': form,
                             'success': True,
-                            'message': result['message'],
+                            'message': result.get('message', 'Mensaje procesado exitosamente'),
                             'consumos_procesados': result.get('consumos_procesados', 0)
                         }
                     else:
-                        context = {'form': form, 'error': result['message']}
+                        context = {'form': form, 'error': result.get('message', 'Error desconocido')}
             except requests.exceptions.ConnectionError:
                 context = {'form': form, 'error': 'No se pudo conectar con el backend.'}
             except Exception as e:
@@ -97,7 +97,7 @@ def operaciones_sistema(request):
         response = requests.get(f'{BACKEND_URL}/consultarDatos')
         if response.status_code == 200:
             result = response.json()
-            if result['success']:
+            if result.get('success'):
                 context['datos_sistema'] = result['data']
     except:
         pass  # Si falla, no mostrar datos
@@ -109,8 +109,12 @@ def operaciones_sistema(request):
             try:
                 response = requests.delete(f'{BACKEND_URL}/reset')
                 if response.status_code == 200:
-                    context['message'] = 'Sistema inicializado correctamente'
-                    context['datos_sistema'] = None  # Limpiar datos mostrados
+                    result = response.json()
+                    if result.get('success'):
+                        context['message'] = result.get('message', 'Sistema inicializado correctamente')
+                        context['datos_sistema'] = None
+                    else:
+                        context['error'] = result.get('message', 'Error desconocido')
                 else:
                     context['error'] = 'Error al inicializar el sistema'
             except Exception as e:
@@ -136,16 +140,17 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearRecurso', json=data)
                     result = response.json()
                     
-                    if result['success']:
-                        context['message'] = result['message']
+                    # ✅ CORREGIDO: Manejo correcto de la respuesta
+                    if result.get('success'):
+                        context['message'] = result.get('message', 'Recurso creado exitosamente')
                         # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
-                            if result_data['success']:
+                            if result_data.get('success'):
                                 context['datos_sistema'] = result_data['data']
                     else:
-                        context['error'] = result['message']
+                        context['error'] = result.get('message', 'Error desconocido al crear recurso')
                 except Exception as e:
                     context['error'] = f'Error al conectar con el backend: {str(e)}'
             else:
@@ -165,16 +170,17 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearCategoria', json=data)
                     result = response.json()
                     
-                    if result['success']:
-                        context['message'] = result['message']
+                    # ✅ CORREGIDO: Manejo correcto de la respuesta
+                    if result.get('success'):
+                        context['message'] = result.get('message', 'Categoría creada exitosamente')
                         # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
-                            if result_data['success']:
+                            if result_data.get('success'):
                                 context['datos_sistema'] = result_data['data']
                     else:
-                        context['error'] = result['message']
+                        context['error'] = result.get('message', 'Error desconocido al crear categoría')
                 except Exception as e:
                     context['error'] = f'Error al conectar con el backend: {str(e)}'
             else:
@@ -194,16 +200,17 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearConfiguracion', json=data)
                     result = response.json()
                     
-                    if result['success']:
-                        context['message'] = result['message']
+                    # ✅ CORREGIDO: Manejo correcto de la respuesta
+                    if result.get('success'):
+                        context['message'] = result.get('message', 'Configuración creada exitosamente')
                         # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
-                            if result_data['success']:
+                            if result_data.get('success'):
                                 context['datos_sistema'] = result_data['data']
                     else:
-                        context['error'] = result['message']
+                        context['error'] = result.get('message', 'Error desconocido al crear configuración')
                 except Exception as e:
                     context['error'] = f'Error al conectar con el backend: {str(e)}'
             else:
@@ -225,16 +232,17 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearCliente', json=data)
                     result = response.json()
                     
-                    if result['success']:
-                        context['message'] = result['message']
+                    # ✅ CORREGIDO: Manejo correcto de la respuesta
+                    if result.get('success'):
+                        context['message'] = result.get('message', 'Cliente creado exitosamente')
                         # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
-                            if result_data['success']:
+                            if result_data.get('success'):
                                 context['datos_sistema'] = result_data['data']
                     else:
-                        context['error'] = result['message']
+                        context['error'] = result.get('message', 'Error desconocido al crear cliente')
                 except Exception as e:
                     context['error'] = f'Error al conectar con el backend: {str(e)}'
             else:
@@ -260,16 +268,17 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearInstancia', json=data)
                     result = response.json()
                     
-                    if result['success']:
-                        context['message'] = result['message']
+                    # ✅ CORREGIDO: Manejo correcto de la respuesta
+                    if result.get('success'):
+                        context['message'] = result.get('message', 'Instancia creada exitosamente')
                         # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
-                            if result_data['success']:
+                            if result_data.get('success'):
                                 context['datos_sistema'] = result_data['data']
                     else:
-                        context['error'] = result['message']
+                        context['error'] = result.get('message', 'Error desconocido al crear instancia')
                 except Exception as e:
                     context['error'] = f'Error al conectar con el backend: {str(e)}'
             else:
@@ -288,16 +297,17 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/cancelarInstancia', json=data)
                     result = response.json()
                     
-                    if result['success']:
-                        context['message'] = result['message']
+                    # ✅ CORREGIDO: Manejo correcto de la respuesta
+                    if result.get('success'):
+                        context['message'] = result.get('message', 'Instancia cancelada exitosamente')
                         # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
-                            if result_data['success']:
+                            if result_data.get('success'):
                                 context['datos_sistema'] = result_data['data']
                     else:
-                        context['error'] = result['message']
+                        context['error'] = result.get('message', 'Error desconocido al cancelar instancia')
                 except Exception as e:
                     context['error'] = f'Error al conectar con el backend: {str(e)}'
             else:
@@ -308,16 +318,16 @@ def operaciones_sistema(request):
                 response = requests.post(f'{BACKEND_URL}/limpiarConsumosDuplicados')
                 result = response.json()
                 
-                if result['success']:
-                    context['message'] = result['message']
+                if result.get('success'):
+                    context['message'] = result.get('message', 'Consumos duplicados eliminados')
                     # Recargar datos
                     response = requests.get(f'{BACKEND_URL}/consultarDatos')
                     if response.status_code == 200:
                         result_data = response.json()
-                        if result_data['success']:
+                        if result_data.get('success'):
                             context['datos_sistema'] = result_data['data']
                 else:
-                    context['error'] = result['message']
+                    context['error'] = result.get('message', 'Error al limpiar consumos')
             except Exception as e:
                 context['error'] = f'Error al conectar con el backend: {str(e)}'
     
@@ -345,17 +355,17 @@ def proceso_facturacion(request):
                 response = requests.post(f'{BACKEND_URL}/generarFactura', json=data)
                 result = response.json()
                 
-                if result['success']:
+                if result.get('success'):
                     context = {
                         'form': form,
                         'success': True,
-                        'message': result['message'],
+                        'message': result.get('message', 'Facturas generadas exitosamente'),
                         'facturas': result.get('facturas', [])
                     }
                 else:
                     context = {
                         'form': form,
-                        'error': result['message']
+                        'error': result.get('message', 'Error al generar facturas')
                     }
             except Exception as e:
                 context = {
@@ -392,7 +402,7 @@ def detalle_factura(request):
             response = requests.get(f'{BACKEND_URL}/factura/{factura_id}')
             result = response.json()
             
-            if result['success']:
+            if result.get('success'):
                 factura = result['factura']
                 context = {
                     'factura': factura,
@@ -401,7 +411,7 @@ def detalle_factura(request):
                 }
                 return render(request, 'core/detalle_factura.html', context)
             else:
-                context = {'error': result['message']}
+                context = {'error': result.get('message', 'Error al obtener factura')}
         except Exception as e:
             context = {'error': f'Error al conectar con el backend: {str(e)}'}
     else:
@@ -410,11 +420,11 @@ def detalle_factura(request):
             response = requests.get(f'{BACKEND_URL}/facturas')
             result = response.json()
             
-            if result['success']:
+            if result.get('success'):
                 facturas = result['facturas']
                 context = {'facturas': facturas}
             else:
-                context = {'error': result['message']}
+                context = {'error': result.get('message', 'Error al obtener facturas')}
         except Exception as e:
             context = {'error': f'Error al conectar con el backend: {str(e)}'}
     
@@ -433,7 +443,7 @@ def analisis_ventas(request):
                 response = requests.get(f'{BACKEND_URL}/facturas')
                 result = response.json()
                 
-                if result['success']:
+                if result.get('success'):
                     facturas = result['facturas']
                     facturas_rango = []
                     
@@ -490,7 +500,7 @@ def analisis_ventas(request):
                         'total_ingresos': sum([f['montoTotal'] for f in facturas_rango])
                     }
                 else:
-                    context = {'form': form, 'error': result['message']}
+                    context = {'form': form, 'error': result.get('message', 'Error al obtener datos')}
             except Exception as e:
                 context = {'form': form, 'error': f'Error al conectar con el backend: {str(e)}'}
         else:
@@ -547,7 +557,7 @@ def get_instancia_by_id(id_instancia):
     try:
         response = requests.get(f'{BACKEND_URL}/instancia/{id_instancia}')
         result = response.json()
-        if result['success']:
+        if result.get('success'):
             return result['instancia']
     except Exception:  
         return None
@@ -556,7 +566,7 @@ def get_configuracion_by_id(id_configuracion):
     try:
         response = requests.get(f'{BACKEND_URL}/configuracion/{id_configuracion}')
         result = response.json()
-        if result['success']:
+        if result.get('success'):
             return result['configuracion']
     except Exception:   
         return None
@@ -565,7 +575,7 @@ def get_categoria_by_id(id_categoria):
     try:
         response = requests.get(f'{BACKEND_URL}/categoria/{id_categoria}')
         result = response.json()
-        if result['success']:
+        if result.get('success'):
             return result['categoria']
     except Exception:  
         return None

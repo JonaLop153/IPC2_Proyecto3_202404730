@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from models import Recurso, Categoria, Configuracion, Cliente, Instancia, Consumo, Factura, RecursoConfiguracion
 from utils import extraer_fecha, extraer_fecha_hora
 import os
-
+from datetime import datetime
 app = Flask(__name__)
 
 def limpiar_xml(xml_data):
@@ -157,7 +157,7 @@ def configurar():
                             if nueva_instancia.guardar():
                                 resultados['instancias_creadas'] += 1
         
-        print("=== PROCESAMIENTO COMPLETADO ===")
+        print(f"=== PROCESAMIENTO COMPLETADO ===")
         print(f"Resultados: {resultados}")
         
         return jsonify({
@@ -279,6 +279,15 @@ def consultar_datos():
 def crear_recurso():
     try:
         data = request.get_json()
+        
+        # ✅ Validar que el ID no exista
+        recurso_existente = Recurso.obtener_por_id(data['id'])
+        if recurso_existente:
+            return jsonify({
+                'success': False,
+                'message': f'Ya existe un recurso con el ID {data["id"]}'
+            }), 400
+        
         r = Recurso(
             data['id'],
             data['nombre'],
@@ -288,16 +297,35 @@ def crear_recurso():
             float(data['valorXhora'])
         )
         if r.guardar():
-            return jsonify({'success': True, 'recurso': r.to_dict()})
+            return jsonify({
+                'success': True, 
+                'message': 'Recurso creado exitosamente',
+                'recurso': r.to_dict()
+            })
         else:
-            return jsonify({'success': False, 'message': 'No se pudo crear el recurso'}), 400
+            return jsonify({
+                'success': False, 
+                'message': 'No se pudo crear el recurso'
+            }), 400
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({
+            'success': False, 
+            'message': f'Error: {str(e)}'
+        }), 400
 
 @app.route('/crearCategoria', methods=['POST'])
 def crear_categoria():
     try:
         data = request.get_json()
+        
+        # ✅ Validar que el ID no exista
+        categoria_existente = Categoria.obtener_por_id(data['id'])
+        if categoria_existente:
+            return jsonify({
+                'success': False,
+                'message': f'Ya existe una categoría con el ID {data["id"]}'
+            }), 400
+        
         c = Categoria(
             data['id'],
             data['nombre'],
@@ -305,16 +333,43 @@ def crear_categoria():
             data['cargaTrabajo']
         )
         if c.guardar():
-            return jsonify({'success': True, 'categoria': c.to_dict()})
+            return jsonify({
+                'success': True, 
+                'message': 'Categoría creada exitosamente',
+                'categoria': c.to_dict()
+            })
         else:
-            return jsonify({'success': False, 'message': 'No se pudo crear la categoría'}), 400
+            return jsonify({
+                'success': False, 
+                'message': 'No se pudo crear la categoría'
+            }), 400
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({
+            'success': False, 
+            'message': f'Error: {str(e)}'
+        }), 400
 
 @app.route('/crearConfiguracion', methods=['POST'])
 def crear_configuracion():
     try:
         data = request.get_json()
+        
+        # ✅ Validar que el ID no exista
+        config_existente = Configuracion.obtener_por_id(data['id'])
+        if config_existente:
+            return jsonify({
+                'success': False,
+                'message': f'Ya existe una configuración con el ID {data["id"]}'
+            }), 400
+        
+        # ✅ Validar que la categoría exista
+        categoria = Categoria.obtener_por_id(data['idCategoria'])
+        if not categoria:
+            return jsonify({
+                'success': False,
+                'message': f'No existe la categoría con ID {data["idCategoria"]}'
+            }), 400
+        
         conf = Configuracion(
             data['id'],
             data['nombre'],
@@ -322,16 +377,35 @@ def crear_configuracion():
             data['idCategoria']
         )
         if conf.guardar():
-            return jsonify({'success': True, 'configuracion': conf.to_dict()})
+            return jsonify({
+                'success': True, 
+                'message': 'Configuración creada exitosamente',
+                'configuracion': conf.to_dict()
+            })
         else:
-            return jsonify({'success': False, 'message': 'No se pudo crear la configuración'}), 400
+            return jsonify({
+                'success': False, 
+                'message': 'No se pudo crear la configuración'
+            }), 400
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({
+            'success': False, 
+            'message': f'Error: {str(e)}'
+        }), 400
 
 @app.route('/crearCliente', methods=['POST'])
 def crear_cliente():
     try:
         data = request.get_json()
+        
+        # ✅ Validar que el NIT no exista
+        cliente_existente = Cliente.obtener_por_nit(data['nit'])
+        if cliente_existente:
+            return jsonify({
+                'success': False,
+                'message': f'Ya existe un cliente con el NIT {data["nit"]}'
+            }), 400
+        
         cli = Cliente(
             data['nit'],
             data['nombre'],
@@ -341,18 +415,54 @@ def crear_cliente():
             data['correoElectronico']
         )
         if cli.guardar():
-            return jsonify({'success': True, 'cliente': cli.to_dict()})
+            return jsonify({
+                'success': True, 
+                'message': 'Cliente creado exitosamente',
+                'cliente': cli.to_dict()
+            })
         else:
-            return jsonify({'success': False, 'message': 'No se pudo crear el cliente'}), 400
+            return jsonify({
+                'success': False, 
+                'message': 'No se pudo crear el cliente'
+            }), 400
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({
+            'success': False, 
+            'message': f'Error: {str(e)}'
+        }), 400
 
 @app.route('/crearInstancia', methods=['POST'])
 def crear_instancia():
     try:
         data = request.get_json()
+        
+        # ✅ Validar que el ID no exista
+        instancia_existente = Instancia.obtener_por_id(data['id'])
+        if instancia_existente:
+            return jsonify({
+                'success': False,
+                'message': f'Ya existe una instancia con el ID {data["id"]}'
+            }), 400
+        
+        # ✅ Validar que el cliente exista
+        cliente = Cliente.obtener_por_nit(data['idCliente'])
+        if not cliente:
+            return jsonify({
+                'success': False,
+                'message': f'No existe el cliente con NIT {data["idCliente"]}'
+            }), 400
+        
+        # ✅ Validar que la configuración exista
+        configuracion = Configuracion.obtener_por_id(data['idConfiguracion'])
+        if not configuracion:
+            return jsonify({
+                'success': False,
+                'message': f'No existe la configuración con ID {data["idConfiguracion"]}'
+            }), 400
+        
         fecha_inicio = extraer_fecha(data['fechaInicio'])
         fecha_final = extraer_fecha(data['fechaFinal']) if data.get('fechaFinal') else None
+        
         inst = Instancia(
             data['id'],
             data['idCliente'],
@@ -363,11 +473,21 @@ def crear_instancia():
             fecha_final
         )
         if inst.guardar():
-            return jsonify({'success': True, 'instancia': inst.to_dict()})
+            return jsonify({
+                'success': True, 
+                'message': 'Instancia creada exitosamente',
+                'instancia': inst.to_dict()
+            })
         else:
-            return jsonify({'success': False, 'message': 'No se pudo crear la instancia'}), 400
+            return jsonify({
+                'success': False, 
+                'message': 'No se pudo crear la instancia'
+            }), 400
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return jsonify({
+            'success': False, 
+            'message': f'Error: {str(e)}'
+        }), 400
 
 @app.route('/cancelarInstancia', methods=['POST'])
 def cancelar_instancia():
@@ -468,19 +588,41 @@ def generar_factura():
         fecha_inicio = extraer_fecha(data['fechaInicio'])
         fecha_fin = extraer_fecha(data['fechaFin'])
         
+        print(f"=== GENERANDO FACTURAS: {fecha_inicio} a {fecha_fin} ===")
+        
+        # Obtener instancias vigentes y consumos
         instancias = Instancia.obtener_todas()
         consumos = Consumo.obtener_todos()
+        facturas_existentes = Factura.obtener_todas()
+        
+        # Obtener consumos ya facturados
+        consumos_facturados = set()
+        for factura in facturas_existentes:
+            for detalle in factura.detalles:
+                key = f"{detalle['id_instancia']}_{detalle['id_recurso']}_{detalle['tiempo_consumido']}"
+                consumos_facturados.add(key)
+        
+        # Agrupar consumos no facturados por cliente en el rango de fechas
         consumos_por_cliente = {}
-        for c in consumos:
-            if fecha_inicio <= c.fecha_hora <= fecha_fin:
-                if c.nit_cliente not in consumos_por_cliente:
-                    consumos_por_cliente[c.nit_cliente] = []
-                consumos_por_cliente[c.nit_cliente].append(c)
+        for consumo in consumos:
+            # Verificar que el consumo esté en el rango y no esté facturado
+            if fecha_inicio <= consumo.fecha_hora <= fecha_fin:
+                instancia = Instancia.obtener_por_id(consumo.id_instancia)
+                if instancia and instancia.estado == 'Vigente':
+                    key = f"{consumo.id_instancia}_{consumo.id_instancia}_{consumo.tiempo_consumido}"
+                    if key not in consumos_facturados:
+                        if consumo.nit_cliente not in consumos_por_cliente:
+                            consumos_por_cliente[consumo.nit_cliente] = []
+                        consumos_por_cliente[consumo.nit_cliente].append(consumo)
         
         facturas_generadas = []
         for nit_cliente, lista_consumos in consumos_por_cliente.items():
+            if not lista_consumos:
+                continue
+                
             monto_total = 0.0
             detalles_factura = []
+            
             for consumo in lista_consumos:
                 instancia = Instancia.obtener_por_id(consumo.id_instancia)
                 if instancia:
@@ -490,8 +632,10 @@ def generar_factura():
                         for recurso_conf in recursos_config:
                             recurso = Recurso.obtener_por_id(recurso_conf.id_recurso)
                             if recurso:
+                                # Calcular costo para este consumo específico
                                 costo_recurso = recurso.valor_hora * recurso_conf.cantidad * consumo.tiempo_consumido
                                 monto_total += costo_recurso
+                                
                                 detalles_factura.append({
                                     'id_instancia': consumo.id_instancia,
                                     'nombre_instancia': instancia.nombre,
@@ -500,11 +644,17 @@ def generar_factura():
                                     'cantidad': recurso_conf.cantidad,
                                     'tiempo_consumido': consumo.tiempo_consumido,
                                     'costo_unitario': recurso.valor_hora,
-                                    'costo_total': costo_recurso
+                                    'costo_total': costo_recurso,
+                                    'fecha_consumo': consumo.fecha_hora.strftime('%d/%m/%Y %H:%M')
                                 })
-            factura = Factura(nit_cliente, fecha_fin, monto_total, detalles_factura)
-            factura.guardar()
-            facturas_generadas.append(factura.to_dict())
+            
+            if detalles_factura:  # Solo crear factura si hay detalles
+                # ✅ CORREGIDO: Usar fecha actual como fecha de emisión
+                fecha_emision = datetime.now()  # ✅ Ahora funciona correctamente
+                factura = Factura(nit_cliente, fecha_emision, monto_total, detalles_factura)
+                if factura.guardar():
+                    facturas_generadas.append(factura.to_dict())
+                    print(f"Factura generada para cliente {nit_cliente}: ${monto_total:.2f}")
         
         return jsonify({
             'success': True,
@@ -513,6 +663,9 @@ def generar_factura():
         })
         
     except Exception as e:
+        import traceback
+        print(f"ERROR en facturación: {str(e)}")
+        print(traceback.format_exc())
         return jsonify({
             'success': False,
             'message': f'Error al generar facturas: {str(e)}'
