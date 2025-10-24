@@ -8,16 +8,16 @@ app = Flask(__name__)
 
 def limpiar_xml(xml_data):
     """Limpia el XML removiendo BOM y espacios innecesarios"""
-    
+    # Convertir a string si son bytes
     if isinstance(xml_data, bytes):
-        
+        # Remover BOM si existe
         if xml_data.startswith(b'\xef\xbb\xbf'):
             xml_data = xml_data[3:]
         xml_str = xml_data.decode('utf-8').strip()
     else:
         xml_str = str(xml_data).strip()
     
-    
+    # Remover espacios extraños al inicio
     xml_str = xml_str.lstrip()
     
     return xml_str
@@ -31,7 +31,7 @@ def configurar():
     try:
         print("=== INICIANDO PROCESAMIENTO CONFIGURACIÓN ===")
         
-        
+        # Obtener datos crudos
         xml_data = request.get_data()
         print(f"Datos recibidos (primeros 200 chars): {xml_data[:200]}")
         
@@ -57,6 +57,7 @@ def configurar():
             'configuraciones_creadas': 0
         }
         
+        # --- Procesar Recursos ---
         lista_recursos = root.find('listaRecursos')
         if lista_recursos is not None:
             print(f"Procesando {len(lista_recursos)} recursos")
@@ -230,8 +231,6 @@ def consumo():
             'message': f'Error: {str(e)}'
         }), 400
 
-# ... (el resto del código permanece igual, con todas las rutas que ya teníamos)
-
 @app.route('/reset', methods=['DELETE'])
 def reset_datos():
     try:
@@ -275,7 +274,320 @@ def consultar_datos():
     except Exception as e:
         return jsonify({'success': False, 'message': f'Error: {str(e)}'}), 500
 
-# ... (mantener todas las demás rutas igual)
+# --- APIs para operaciones individuales (usadas por el frontend) ---
+@app.route('/crearRecurso', methods=['POST'])
+def crear_recurso():
+    try:
+        data = request.get_json()
+        r = Recurso(
+            data['id'],
+            data['nombre'],
+            data['abreviatura'],
+            data['metrica'],
+            data['tipo'],
+            float(data['valorXhora'])
+        )
+        if r.guardar():
+            return jsonify({'success': True, 'recurso': r.to_dict()})
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo crear el recurso'}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+@app.route('/crearCategoria', methods=['POST'])
+def crear_categoria():
+    try:
+        data = request.get_json()
+        c = Categoria(
+            data['id'],
+            data['nombre'],
+            data['descripcion'],
+            data['cargaTrabajo']
+        )
+        if c.guardar():
+            return jsonify({'success': True, 'categoria': c.to_dict()})
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo crear la categoría'}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+@app.route('/crearConfiguracion', methods=['POST'])
+def crear_configuracion():
+    try:
+        data = request.get_json()
+        conf = Configuracion(
+            data['id'],
+            data['nombre'],
+            data['descripcion'],
+            data['idCategoria']
+        )
+        if conf.guardar():
+            return jsonify({'success': True, 'configuracion': conf.to_dict()})
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo crear la configuración'}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+@app.route('/crearCliente', methods=['POST'])
+def crear_cliente():
+    try:
+        data = request.get_json()
+        cli = Cliente(
+            data['nit'],
+            data['nombre'],
+            data['usuario'],
+            data['clave'],
+            data['direccion'],
+            data['correoElectronico']
+        )
+        if cli.guardar():
+            return jsonify({'success': True, 'cliente': cli.to_dict()})
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo crear el cliente'}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+@app.route('/crearInstancia', methods=['POST'])
+def crear_instancia():
+    try:
+        data = request.get_json()
+        fecha_inicio = extraer_fecha(data['fechaInicio'])
+        fecha_final = extraer_fecha(data['fechaFinal']) if data.get('fechaFinal') else None
+        inst = Instancia(
+            data['id'],
+            data['idCliente'],
+            data['idConfiguracion'],
+            data['nombre'],
+            fecha_inicio,
+            data['estado'],
+            fecha_final
+        )
+        if inst.guardar():
+            return jsonify({'success': True, 'instancia': inst.to_dict()})
+        else:
+            return jsonify({'success': False, 'message': 'No se pudo crear la instancia'}), 400
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 400
+
+@app.route('/cancelarInstancia', methods=['POST'])
+def cancelar_instancia():
+    try:
+        data = request.get_json()
+        id_instancia = data['id_instancia']
+        fecha_cancelacion = extraer_fecha(data['fecha_cancelacion'])
+        
+        instancia = Instancia.obtener_por_id(id_instancia)
+        if instancia:
+            instancia.estado = 'Cancelada'
+            instancia.fecha_final = fecha_cancelacion
+            if instancia.guardar():
+                return jsonify({
+                    'success': True,
+                    'message': f'Instancia {id_instancia} cancelada exitosamente'
+                })
+            else:
+                return jsonify({
+                    'success': False,
+                    'message': 'Error al guardar los cambios'
+                })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Instancia no encontrada'
+            }), 404
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 400
+
+@app.route('/agregarRecursoConfiguracion', methods=['POST'])
+def agregar_recurso_configuracion():
+    try:
+        data = request.get_json()
+        id_configuracion = data['id_configuracion']
+        id_recurso = data['id_recurso']
+        cantidad = float(data['cantidad'])
+        
+        recurso_config = RecursoConfiguracion(id_configuracion, id_recurso, cantidad)
+        if recurso_config.guardar():
+            return jsonify({
+                'success': True,
+                'message': 'Recurso agregado a la configuración exitosamente'
+            })
+        else:
+            return jsonify({
+                'success': False,
+                'message': 'Error al agregar recurso a la configuración'
+            })
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 400
+
+@app.route('/limpiarConsumosDuplicados', methods=['POST'])
+def limpiar_consumos_duplicados():
+    try:
+        root = Recurso._obtener_root()
+        consumos = root.find('consumos')
+        
+        # Encontrar consumos únicos
+        consumos_unicos = {}
+        for consumo in consumos.findall('consumo'):
+            key = f"{consumo.get('idInstancia')}_{consumo.get('nitCliente')}_{consumo.find('fechaHora').text}"
+            if key not in consumos_unicos:
+                consumos_unicos[key] = consumo
+        
+        # Limpiar todos los consumos
+        consumos.clear()
+        
+        # Agregar solo los consumos únicos
+        for consumo in consumos_unicos.values():
+            consumos.append(consumo)
+        
+        Recurso._guardar_xml(root)
+        
+        return jsonify({
+            'success': True,
+            'message': f'Consumos duplicados eliminados. Quedaron {len(consumos_unicos)} consumos únicos.'
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}'
+        }), 400
+
+@app.route('/generarFactura', methods=['POST'])
+def generar_factura():
+    try:
+        data = request.get_json()
+        fecha_inicio = extraer_fecha(data['fechaInicio'])
+        fecha_fin = extraer_fecha(data['fechaFin'])
+        
+        instancias = Instancia.obtener_todas()
+        consumos = Consumo.obtener_todos()
+        consumos_por_cliente = {}
+        for c in consumos:
+            if fecha_inicio <= c.fecha_hora <= fecha_fin:
+                if c.nit_cliente not in consumos_por_cliente:
+                    consumos_por_cliente[c.nit_cliente] = []
+                consumos_por_cliente[c.nit_cliente].append(c)
+        
+        facturas_generadas = []
+        for nit_cliente, lista_consumos in consumos_por_cliente.items():
+            monto_total = 0.0
+            detalles_factura = []
+            for consumo in lista_consumos:
+                instancia = Instancia.obtener_por_id(consumo.id_instancia)
+                if instancia:
+                    configuracion = Configuracion.obtener_por_id(instancia.id_configuracion)
+                    if configuracion:
+                        recursos_config = RecursoConfiguracion.obtener_por_configuracion(configuracion.id)
+                        for recurso_conf in recursos_config:
+                            recurso = Recurso.obtener_por_id(recurso_conf.id_recurso)
+                            if recurso:
+                                costo_recurso = recurso.valor_hora * recurso_conf.cantidad * consumo.tiempo_consumido
+                                monto_total += costo_recurso
+                                detalles_factura.append({
+                                    'id_instancia': consumo.id_instancia,
+                                    'nombre_instancia': instancia.nombre,
+                                    'id_recurso': recurso.id,
+                                    'nombre_recurso': recurso.nombre,
+                                    'cantidad': recurso_conf.cantidad,
+                                    'tiempo_consumido': consumo.tiempo_consumido,
+                                    'costo_unitario': recurso.valor_hora,
+                                    'costo_total': costo_recurso
+                                })
+            factura = Factura(nit_cliente, fecha_fin, monto_total, detalles_factura)
+            factura.guardar()
+            facturas_generadas.append(factura.to_dict())
+        
+        return jsonify({
+            'success': True,
+            'message': f'Se generaron {len(facturas_generadas)} facturas exitosamente',
+            'facturas': facturas_generadas
+        })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'message': f'Error al generar facturas: {str(e)}'
+        }), 500
+
+# --- Rutas para consultas individuales ---
+@app.route('/facturas', methods=['GET'])
+def obtener_facturas():
+    try:
+        facturas = [f.to_dict() for f in Factura.obtener_todas()]
+        return jsonify({'success': True, 'facturas': facturas})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/factura/<int:id_factura>', methods=['GET'])
+def obtener_factura(id_factura):
+    try:
+        factura = Factura.obtener_por_id(id_factura)
+        if factura:
+            return jsonify({'success': True, 'factura': factura.to_dict()})
+        else:
+            return jsonify({'success': False, 'message': 'Factura no encontrada'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/instancia/<int:id_instancia>', methods=['GET'])
+def obtener_instancia(id_instancia):
+    try:
+        instancia = Instancia.obtener_por_id(id_instancia)
+        if instancia:
+            return jsonify({'success': True, 'instancia': instancia.to_dict()})
+        else:
+            return jsonify({'success': False, 'message': 'Instancia no encontrada'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/configuracion/<int:id_configuracion>', methods=['GET'])
+def obtener_configuracion(id_configuracion):
+    try:
+        configuracion = Configuracion.obtener_por_id(id_configuracion)
+        if configuracion:
+            return jsonify({'success': True, 'configuracion': configuracion.to_dict()})
+        else:
+            return jsonify({'success': False, 'message': 'Configuración no encontrada'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/categoria/<int:id_categoria>', methods=['GET'])
+def obtener_categoria(id_categoria):
+    try:
+        categoria = Categoria.obtener_por_id(id_categoria)
+        if categoria:
+            return jsonify({'success': True, 'categoria': categoria.to_dict()})
+        else:
+            return jsonify({'success': False, 'message': 'Categoría no encontrada'}), 404
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/recursos-configuracion/<int:id_configuracion>', methods=['GET'])
+def obtener_recursos_configuracion(id_configuracion):
+    try:
+        recursos_config = RecursoConfiguracion.obtener_por_configuracion(id_configuracion)
+        recursos_data = []
+        for rc in recursos_config:
+            recurso = Recurso.obtener_por_id(rc.id_recurso)
+            if recurso:
+                recursos_data.append({
+                    'id_recurso': rc.id_recurso,
+                    'nombre_recurso': recurso.nombre,
+                    'cantidad': rc.cantidad,
+                    'valor_hora': recurso.valor_hora
+                })
+        return jsonify({'success': True, 'recursos': recursos_data})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
 
 if __name__ == '__main__':
     print("=== INICIANDO SERVIDOR BACKEND ===")

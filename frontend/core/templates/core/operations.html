@@ -1,183 +1,333 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Operaciones del Sistema - Tecnologías Chapinas, S.A.{% endblock %}
-
 {% block content %}
-<div class="card">
-    <div class="card-header">
-        <h2>Operaciones del Sistema</h2>
+<div class="container">
+    <h2>Operaciones del Sistema</h2>
+    
+    <!-- Mensajes -->
+    {% if message %}
+    <div class="alert alert-success">
+        {{ message }}
     </div>
-    <div class="card-body">
-        {% if message %}
-        <div class="alert alert-success">
-            {{ message }}
+    {% endif %}
+    
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- Botones de Acción Principal -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Acciones del Sistema</h5>
         </div>
-        {% elif error %}
-        <div class="alert alert-danger">
-            {{ error }}
+        <div class="card-body">
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="inicializar">
+                <button type="submit" class="btn btn-danger me-2" 
+                        onclick="return confirm('¿Está seguro de que desea inicializar el sistema? Se perderán todos los datos.')">
+                    Inicializar Sistema
+                </button>
+            </form>
+            
+            <form method="post" class="d-inline">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="consultar">
+                <button type="submit" class="btn btn-info">
+                    Consultar Datos
+                </button>
+            </form>
         </div>
-        {% endif %}
-        
-        <div class="row">
-            <div class="col-md-4">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h5>Acciones del Sistema</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            <button type="submit" name="action" value="inicializar" class="btn btn-danger btn-sm w-100 mb-2">Inicializar Sistema</button>
-                            <button type="submit" name="action" value="consultar" class="btn btn-info btn-sm w-100 mb-2">Consultar Datos</button>
-                        </form>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Crear Nuevo Recurso</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="crear_recurso">
-                            {{ crear_recurso_form.as_p }}
-                            <button type="submit" class="btn btn-primary btn-sm">Crear Recurso</button>
-                        </form>
-                    </div>
-                </div>
+    </div>
+
+    <!-- Mostrar Datos del Sistema -->
+    {% if datos_sistema %}
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Datos del Sistema</h5>
+        </div>
+        <div class="card-body">
+            <!-- Recursos -->
+            <h6>Recursos ({{ datos_sistema.recursos|length }})</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Abreviatura</th>
+                            <th>Métrica</th>
+                            <th>Tipo</th>
+                            <th>Valor/Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for recurso in datos_sistema.recursos %}
+                        <tr>
+                            <td>{{ recurso.id }}</td>
+                            <td>{{ recurso.nombre }}</td>
+                            <td>{{ recurso.abreviatura }}</td>
+                            <td>{{ recurso.metrica }}</td>
+                            <td>{{ recurso.tipo }}</td>
+                            <td>${{ recurso.valorXhora }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Crear Nueva Categoría</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="crear_categoria">
-                            {{ crear_categoria_form.as_p }}
-                            <button type="submit" class="btn btn-primary btn-sm">Crear Categoría</button>
-                        </form>
-                    </div>
-                </div>
-                
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h5>Crear Nueva Configuración</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="crear_configuracion">
-                            {{ crear_configuracion_form.as_p }}
-                            <button type="submit" class="btn btn-primary btn-sm">Crear Configuración</button>
-                        </form>
-                    </div>
-                </div>
+
+            <!-- Categorías -->
+            <h6>Categorías ({{ datos_sistema.categorias|length }})</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Carga de Trabajo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for categoria in datos_sistema.categorias %}
+                        <tr>
+                            <td>{{ categoria.id }}</td>
+                            <td>{{ categoria.nombre }}</td>
+                            <td>{{ categoria.descripcion }}</td>
+                            <td>{{ categoria.cargaTrabajo }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            
-            <div class="col-md-4">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Crear Nuevo Cliente</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="crear_cliente">
-                            {{ crear_cliente_form.as_p }}
-                            <button type="submit" class="btn btn-primary btn-sm">Crear Cliente</button>
-                        </form>
-                    </div>
+
+            <!-- Configuraciones -->
+            <h6>Configuraciones ({{ datos_sistema.configuraciones|length }})</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>ID Categoría</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for config in datos_sistema.configuraciones %}
+                        <tr>
+                            <td>{{ config.id }}</td>
+                            <td>{{ config.nombre }}</td>
+                            <td>{{ config.descripcion }}</td>
+                            <td>{{ config.idCategoria }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Clientes -->
+            <h6>Clientes ({{ datos_sistema.clientes|length }})</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>NIT</th>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Dirección</th>
+                            <th>Email</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cliente in datos_sistema.clientes %}
+                        <tr>
+                            <td>{{ cliente.nit }}</td>
+                            <td>{{ cliente.nombre }}</td>
+                            <td>{{ cliente.usuario }}</td>
+                            <td>{{ cliente.direccion }}</td>
+                            <td>{{ cliente.correoElectronico }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Instancias -->
+            <h6>Instancias ({{ datos_sistema.instancias|length }})</h6>
+            <div class="table-responsive mb-3">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Cliente</th>
+                            <th>Configuración</th>
+                            <th>Estado</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Final</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for instancia in datos_sistema.instancias %}
+                        <tr>
+                            <td>{{ instancia.id }}</td>
+                            <td>{{ instancia.nombre }}</td>
+                            <td>{{ instancia.idCliente }}</td>
+                            <td>{{ instancia.idConfiguracion }}</td>
+                            <td>
+                                <span class="badge {% if instancia.estado == 'Vigente' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ instancia.estado }}
+                                </span>
+                            </td>
+                            <td>{{ instancia.fechaInicio }}</td>
+                            <td>{{ instancia.fechaFinal|default:"-" }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Consumos -->
+            <h6>Consumos ({{ datos_sistema.consumos|length }})</h6>
+            <div class="table-responsive">
+                <table class="table table-sm table-striped">
+                    <thead>
+                        <tr>
+                            <th>Instancia</th>
+                            <th>Cliente</th>
+                            <th>Tiempo (horas)</th>
+                            <th>Fecha/Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for consumo in datos_sistema.consumos %}
+                        <tr>
+                            <td>{{ consumo.idInstancia }}</td>
+                            <td>{{ consumo.nitCliente }}</td>
+                            <td>{{ consumo.tiempo }}</td>
+                            <td>{{ consumo.fechaHora }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Formularios de Creación -->
+    <div class="row">
+        <!-- Crear Recurso -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Crear Nuevo Recurso</h5>
                 </div>
-                
-                <div class="card mt-3">
-                    <div class="card-header">
-                        <h5>Registrar Nueva Instancia</h5>
-                    </div>
-                    <div class="card-body">
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="action" value="crear_instancia">
-                            {{ crear_instancia_form.as_p }}
-                            <button type="submit" class="btn btn-primary btn-sm">Crear Instancia</button>
-                        </form>
-                    </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="crear_recurso">
+                        {{ crear_recurso_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Crear Recurso</button>
+                    </form>
                 </div>
             </div>
         </div>
-        
-        {% if datos %}
-        <div class="mt-4">
-            <h3>Datos del Sistema</h3>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-header">Clientes ({{ datos.clientes|length }})</div>
-                        <div class="card-body">
-                            <ul>
-                                {% for cliente in datos.clientes %}
-                                <li>{{ cliente.nombre }} (NIT: {{ cliente.nit }})</li>
-                                {% empty %}
-                                <li>No hay clientes registrados</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
+
+        <!-- Crear Categoría -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Crear Nueva Categoría</h5>
                 </div>
-                
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-header">Instancias ({{ datos.instancias|length }})</div>
-                        <div class="card-body">
-                            <ul>
-                                {% for instancia in datos.instancias %}
-                                <li>{{ instancia.nombre }} (ID: {{ instancia.id }}, Estado: {{ instancia.estado }})</li>
-                                {% empty %}
-                                <li>No hay instancias registradas</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="row">
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-header">Recursos ({{ datos.recursos|length }})</div>
-                        <div class="card-body">
-                            <ul>
-                                {% for recurso in datos.recursos %}
-                                <li>{{ recurso.nombre }} ({{ recurso.abreviatura }} - {{ recurso.metrica }})</li>
-                                {% empty %}
-                                <li>No hay recursos registrados</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-md-6">
-                    <div class="card mb-3">
-                        <div class="card-header">Categorías ({{ datos.categorias|length }})</div>
-                        <div class="card-body">
-                            <ul>
-                                {% for categoria in datos.categorias %}
-                                <li>{{ categoria.nombre }} (Carga de trabajo: {{ categoria.cargaTrabajo }})</li>
-                                {% empty %}
-                                <li>No hay categorías registradas</li>
-                                {% endfor %}
-                            </ul>
-                        </div>
-                    </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="crear_categoria">
+                        {{ crear_categoria_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Crear Categoría</button>
+                    </form>
                 </div>
             </div>
         </div>
-        {% endif %}
+
+        <!-- Crear Configuración -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Crear Nueva Configuración</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="crear_configuracion">
+                        {{ crear_configuracion_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Crear Configuración</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crear Cliente -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Crear Nuevo Cliente</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="crear_cliente">
+                        {{ crear_cliente_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Crear Cliente</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Crear Instancia -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Crear Nueva Instancia</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="crear_instancia">
+                        {{ crear_instancia_form.as_p }}
+                        <button type="submit" class="btn btn-primary">Crear Instancia</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cancelar Instancia -->
+        <div class="col-md-6 mb-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Cancelar Instancia</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="cancelar_instancia">
+                        <div class="mb-3">
+                            <label for="id_instancia" class="form-label">ID de Instancia</label>
+                            <input type="number" class="form-control" id="id_instancia" name="id_instancia" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="fecha_cancelacion" class="form-label">Fecha de Cancelación (dd/mm/yyyy)</label>
+                            <input type="text" class="form-control" id="fecha_cancelacion" name="fecha_cancelacion" required>
+                        </div>
+                        <button type="submit" class="btn btn-warning">Cancelar Instancia</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

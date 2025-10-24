@@ -29,7 +29,7 @@ def enviar_mensaje_configuracion(request):
                     # Enviar como cuerpo crudo (bytes)
                     response = requests.post(
                         'http://localhost:5000/configurar',
-                        data=xml_content,  # bytes, no string
+                        data=xml_content,
                         headers={'Content-Type': 'application/xml'}
                     )
                     result = response.json()
@@ -38,7 +38,7 @@ def enviar_mensaje_configuracion(request):
                             'form': form,
                             'success': True,
                             'message': result['message'],
-                            'resultados': result['resultados']
+                            'resultados': result.get('resultados', {})
                         }
                     else:
                         context = {'form': form, 'error': result['message']}
@@ -74,7 +74,7 @@ def enviar_mensaje_consumo(request):
                             'form': form,
                             'success': True,
                             'message': result['message'],
-                            'consumos_procesados': result['consumos_procesados']
+                            'consumos_procesados': result.get('consumos_procesados', 0)
                         }
                     else:
                         context = {'form': form, 'error': result['message']}
@@ -92,32 +92,33 @@ def enviar_mensaje_consumo(request):
 def operaciones_sistema(request):
     context = {}
     
+    # Obtener datos para mostrar en consultas
+    try:
+        response = requests.get(f'{BACKEND_URL}/consultarDatos')
+        if response.status_code == 200:
+            result = response.json()
+            if result['success']:
+                context['datos_sistema'] = result['data']
+    except:
+        pass  # Si falla, no mostrar datos
+    
     if request.method == 'POST':
         action = request.POST.get('action')
         
         if action == 'inicializar':
-            # Limpiar todos los datos
             try:
-                response = requests.delete(f'{BACKEND_URL}/reset')  # Asumiendo que implementamos esta ruta
+                response = requests.delete(f'{BACKEND_URL}/reset')
                 if response.status_code == 200:
                     context['message'] = 'Sistema inicializado correctamente'
+                    context['datos_sistema'] = None  # Limpiar datos mostrados
                 else:
                     context['error'] = 'Error al inicializar el sistema'
             except Exception as e:
                 context['error'] = f'Error al conectar con el backend: {str(e)}'
         
         elif action == 'consultar':
-            # Consultar datos del sistema
-            try:
-                response = requests.get(f'{BACKEND_URL}/consultarDatos')
-                result = response.json()
-                
-                if result['success']:
-                    context['datos'] = result['data']
-                else:
-                    context['error'] = result['message']
-            except Exception as e:
-                context['error'] = f'Error al conectar con el backend: {str(e)}'
+            # Los datos ya se cargan al inicio de la función
+            pass
         
         elif action == 'crear_recurso':
             form = CrearRecursoForm(request.POST)
@@ -128,7 +129,7 @@ def operaciones_sistema(request):
                     'abreviatura': form.cleaned_data['abreviatura'],
                     'metrica': form.cleaned_data['metrica'],
                     'tipo': form.cleaned_data['tipo'],
-                    'valorXhora': form.cleaned_data['valorXhora']
+                    'valorXhora': float(form.cleaned_data['valorXhora'])
                 }
                 
                 try:
@@ -137,7 +138,12 @@ def operaciones_sistema(request):
                     
                     if result['success']:
                         context['message'] = result['message']
-                        context['recurso'] = result['recurso']
+                        # Recargar datos
+                        response = requests.get(f'{BACKEND_URL}/consultarDatos')
+                        if response.status_code == 200:
+                            result_data = response.json()
+                            if result_data['success']:
+                                context['datos_sistema'] = result_data['data']
                     else:
                         context['error'] = result['message']
                 except Exception as e:
@@ -161,7 +167,12 @@ def operaciones_sistema(request):
                     
                     if result['success']:
                         context['message'] = result['message']
-                        context['categoria'] = result['categoria']
+                        # Recargar datos
+                        response = requests.get(f'{BACKEND_URL}/consultarDatos')
+                        if response.status_code == 200:
+                            result_data = response.json()
+                            if result_data['success']:
+                                context['datos_sistema'] = result_data['data']
                     else:
                         context['error'] = result['message']
                 except Exception as e:
@@ -185,7 +196,12 @@ def operaciones_sistema(request):
                     
                     if result['success']:
                         context['message'] = result['message']
-                        context['configuracion'] = result['configuracion']
+                        # Recargar datos
+                        response = requests.get(f'{BACKEND_URL}/consultarDatos')
+                        if response.status_code == 200:
+                            result_data = response.json()
+                            if result_data['success']:
+                                context['datos_sistema'] = result_data['data']
                     else:
                         context['error'] = result['message']
                 except Exception as e:
@@ -211,7 +227,12 @@ def operaciones_sistema(request):
                     
                     if result['success']:
                         context['message'] = result['message']
-                        context['cliente'] = result['cliente']
+                        # Recargar datos
+                        response = requests.get(f'{BACKEND_URL}/consultarDatos')
+                        if response.status_code == 200:
+                            result_data = response.json()
+                            if result_data['success']:
+                                context['datos_sistema'] = result_data['data']
                     else:
                         context['error'] = result['message']
                 except Exception as e:
@@ -229,8 +250,11 @@ def operaciones_sistema(request):
                     'nombre': form.cleaned_data['nombre'],
                     'fechaInicio': form.cleaned_data['fechaInicio'],
                     'estado': form.cleaned_data['estado'],
-                    'fechaFinal': form.cleaned_data['fechaFinal'] if form.cleaned_data['estado'] == 'Cancelada' else None
                 }
+                
+                # Solo agregar fechaFinal si la instancia está cancelada
+                if form.cleaned_data['estado'] == 'Cancelada' and form.cleaned_data.get('fechaFinal'):
+                    data['fechaFinal'] = form.cleaned_data['fechaFinal']
                 
                 try:
                     response = requests.post(f'{BACKEND_URL}/crearInstancia', json=data)
@@ -238,7 +262,12 @@ def operaciones_sistema(request):
                     
                     if result['success']:
                         context['message'] = result['message']
-                        context['instancia'] = result['instancia']
+                        # Recargar datos
+                        response = requests.get(f'{BACKEND_URL}/consultarDatos')
+                        if response.status_code == 200:
+                            result_data = response.json()
+                            if result_data['success']:
+                                context['datos_sistema'] = result_data['data']
                     else:
                         context['error'] = result['message']
                 except Exception as e:
@@ -247,10 +276,52 @@ def operaciones_sistema(request):
                 context['error'] = 'Formulario inválido'
         
         elif action == 'cancelar_instancia':
-            # Implementar cancelación de instancia
-            pass
+            id_instancia = request.POST.get('id_instancia')
+            fecha_cancelacion = request.POST.get('fecha_cancelacion')
+            
+            if id_instancia and fecha_cancelacion:
+                try:
+                    data = {
+                        'id_instancia': int(id_instancia),
+                        'fecha_cancelacion': fecha_cancelacion
+                    }
+                    response = requests.post(f'{BACKEND_URL}/cancelarInstancia', json=data)
+                    result = response.json()
+                    
+                    if result['success']:
+                        context['message'] = result['message']
+                        # Recargar datos
+                        response = requests.get(f'{BACKEND_URL}/consultarDatos')
+                        if response.status_code == 200:
+                            result_data = response.json()
+                            if result_data['success']:
+                                context['datos_sistema'] = result_data['data']
+                    else:
+                        context['error'] = result['message']
+                except Exception as e:
+                    context['error'] = f'Error al conectar con el backend: {str(e)}'
+            else:
+                context['error'] = 'Datos incompletos para cancelar instancia'
+        
+        elif action == 'limpiar_consumos':
+            try:
+                response = requests.post(f'{BACKEND_URL}/limpiarConsumosDuplicados')
+                result = response.json()
+                
+                if result['success']:
+                    context['message'] = result['message']
+                    # Recargar datos
+                    response = requests.get(f'{BACKEND_URL}/consultarDatos')
+                    if response.status_code == 200:
+                        result_data = response.json()
+                        if result_data['success']:
+                            context['datos_sistema'] = result_data['data']
+                else:
+                    context['error'] = result['message']
+            except Exception as e:
+                context['error'] = f'Error al conectar con el backend: {str(e)}'
     
-    # Mostrar formulario para operaciones
+    # Mostrar formularios para operaciones
     context.update({
         'crear_recurso_form': CrearRecursoForm(),
         'crear_categoria_form': CrearCategoriaForm(),
@@ -279,7 +350,7 @@ def proceso_facturacion(request):
                         'form': form,
                         'success': True,
                         'message': result['message'],
-                        'facturas': result['facturas']
+                        'facturas': result.get('facturas', [])
                     }
                 else:
                     context = {

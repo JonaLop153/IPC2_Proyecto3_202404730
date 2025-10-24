@@ -1,2 +1,74 @@
 <?xml version='1.0' encoding='utf-8'?>
-<database><recursos /><categorias /><configuraciones /><clientes /><instancias /><consumos /><facturas /></database>
+<database>
+  <recursos>
+    <recurso id="1">
+      <nombre>Núcleos CPU</nombre>
+      <abreviatura>CPU</abreviatura>
+      <metrica>unidades</metrica>
+      <tipo>Hardware</tipo>
+      <valorXhora>1.2</valorXhora>
+    </recurso>
+  </recursos>
+  <categorias>
+    <categoria id="1">
+      <nombre>Máquinas Virtuales Desarrollo</nombre>
+      <descripcion>Configuraciones para entornos de desarrollo y pruebas</descripcion>
+      <cargaTrabajo>Desarrollo de software</cargaTrabajo>
+    </categoria>
+  </categorias>
+  <configuraciones>
+    <configuracion id="1">
+      <nombre>Dev Basic</nombre>
+      <descripcion>Configuración básica para desarrollo</descripcion>
+      <idCategoria>1</idCategoria>
+      <recursosConfiguracion>
+        <recurso id="1">2.0</recurso>
+      </recursosConfiguracion>
+    </configuracion>
+  </configuraciones>
+  <clientes>
+    <cliente nit="12345-6">
+      <nombre>Empresa Ejemplo S.A.</nombre>
+      <usuario>empresa_ejemplo</usuario>
+      <clave>password123</clave>
+      <direccion>Ciudad de Guatemala</direccion>
+      <correoElectronico>contacto@empresaejemplo.com</correoElectronico>
+    </cliente>
+  </clientes>
+  <instancias>
+    <instancia id="1">
+      <idCliente>12345-6</idCliente>
+      <idConfiguracion>1</idConfiguracion>
+      <nombre>Servidor Desarrollo 1</nombre>
+      <fechaInicio>01/01/2025</fechaInicio>
+      <estado>Vigente</estado>
+    </instancia>
+  </instancias>
+  <consumos>
+    <consumo idInstancia="1" nitCliente="12345-6">
+      <tiempo>10.5</tiempo>
+      <fechaHora>15/01/2025 08:30</fechaHora>
+    </consumo>
+    <consumo idInstancia="1" nitCliente="12345-6">
+      <tiempo>5.25</tiempo>
+      <fechaHora>16/01/2025 14:15</fechaHora>
+    </consumo>
+    <consumo idInstancia="1" nitCliente="12345-6">
+      <tiempo>10.5</tiempo>
+      <fechaHora>15/01/2025 08:30</fechaHora>
+    </consumo>
+    <consumo idInstancia="1" nitCliente="12345-6">
+      <tiempo>5.25</tiempo>
+      <fechaHora>16/01/2025 14:15</fechaHora>
+    </consumo>
+    <consumo idInstancia="1" nitCliente="12345-6">
+      <tiempo>10.5</tiempo>
+      <fechaHora>15/01/2025 08:30</fechaHora>
+    </consumo>
+    <consumo idInstancia="1" nitCliente="12345-6">
+      <tiempo>5.25</tiempo>
+      <fechaHora>16/01/2025 14:15</fechaHora>
+    </consumo>
+  </consumos>
+  <facturas />
+</database>
