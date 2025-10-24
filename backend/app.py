@@ -8,16 +8,16 @@ app = Flask(__name__)
 
 def limpiar_xml(xml_data):
     """Limpia el XML removiendo BOM y espacios innecesarios"""
-    # Convertir a string si son bytes
+    
     if isinstance(xml_data, bytes):
-        # Remover BOM si existe
+        
         if xml_data.startswith(b'\xef\xbb\xbf'):
             xml_data = xml_data[3:]
         xml_str = xml_data.decode('utf-8').strip()
     else:
         xml_str = str(xml_data).strip()
     
-    # Remover espacios extraños al inicio
+    
     xml_str = xml_str.lstrip()
     
     return xml_str
@@ -31,7 +31,7 @@ def configurar():
     try:
         print("=== INICIANDO PROCESAMIENTO CONFIGURACIÓN ===")
         
-        # Obtener datos crudos
+        
         xml_data = request.get_data()
         print(f"Datos recibidos (primeros 200 chars): {xml_data[:200]}")
         
@@ -57,7 +57,6 @@ def configurar():
             'configuraciones_creadas': 0
         }
         
-        # --- Procesar Recursos ---
         lista_recursos = root.find('listaRecursos')
         if lista_recursos is not None:
             print(f"Procesando {len(lista_recursos)} recursos")
