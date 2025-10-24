@@ -1,0 +1,43 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Ayuda - Tecnologías Chapinas, S.A.{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Ayuda</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Información del Estudiante</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Nombre:</strong> {{ estudiante_info.nombre }}</p>
+                        <p><strong>Carnet:</strong> {{ estudiante_info.carnet }}</p>
+                        <p><strong>Carrera:</strong> {{ estudiante_info.carrera }}</p>
+                        <p><strong>Universidad:</strong> {{ estudiante_info.universidad }}</p>
+                        <p><strong>Semestre:</strong> {{ estudiante_info.semestre }}</p>
+                        <p><strong>Curso:</strong> {{ estudiante_info.curso }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Documentación del Programa</h5>
+                    </div>
+                    <div class="card-body">
+                        <pre style="white-space: pre-wrap; background-color: #f8f9fa; padding: 15px; border-radius: 5px;">
+{{ documentacion }}
+                        </pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

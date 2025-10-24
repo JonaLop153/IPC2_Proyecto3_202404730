@@ -1,0 +1,183 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Operaciones del Sistema - Tecnologías Chapinas, S.A.{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Operaciones del Sistema</h2>
+    </div>
+    <div class="card-body">
+        {% if message %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+        {% elif error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+        {% endif %}
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>Acciones del Sistema</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <button type="submit" name="action" value="inicializar" class="btn btn-danger btn-sm w-100 mb-2">Inicializar Sistema</button>
+                            <button type="submit" name="action" value="consultar" class="btn btn-info btn-sm w-100 mb-2">Consultar Datos</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Crear Nuevo Recurso</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="crear_recurso">
+                            {{ crear_recurso_form.as_p }}
+                            <button type="submit" class="btn btn-primary btn-sm">Crear Recurso</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Crear Nueva Categoría</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="crear_categoria">
+                            {{ crear_categoria_form.as_p }}
+                            <button type="submit" class="btn btn-primary btn-sm">Crear Categoría</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>Crear Nueva Configuración</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="crear_configuracion">
+                            {{ crear_configuracion_form.as_p }}
+                            <button type="submit" class="btn btn-primary btn-sm">Crear Configuración</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Crear Nuevo Cliente</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="crear_cliente">
+                            {{ crear_cliente_form.as_p }}
+                            <button type="submit" class="btn btn-primary btn-sm">Crear Cliente</button>
+                        </form>
+                    </div>
+                </div>
+                
+                <div class="card mt-3">
+                    <div class="card-header">
+                        <h5>Registrar Nueva Instancia</h5>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="action" value="crear_instancia">
+                            {{ crear_instancia_form.as_p }}
+                            <button type="submit" class="btn btn-primary btn-sm">Crear Instancia</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if datos %}
+        <div class="mt-4">
+            <h3>Datos del Sistema</h3>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">Clientes ({{ datos.clientes|length }})</div>
+                        <div class="card-body">
+                            <ul>
+                                {% for cliente in datos.clientes %}
+                                <li>{{ cliente.nombre }} (NIT: {{ cliente.nit }})</li>
+                                {% empty %}
+                                <li>No hay clientes registrados</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">Instancias ({{ datos.instancias|length }})</div>
+                        <div class="card-body">
+                            <ul>
+                                {% for instancia in datos.instancias %}
+                                <li>{{ instancia.nombre }} (ID: {{ instancia.id }}, Estado: {{ instancia.estado }})</li>
+                                {% empty %}
+                                <li>No hay instancias registradas</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">Recursos ({{ datos.recursos|length }})</div>
+                        <div class="card-body">
+                            <ul>
+                                {% for recurso in datos.recursos %}
+                                <li>{{ recurso.nombre }} ({{ recurso.abreviatura }} - {{ recurso.metrica }})</li>
+                                {% empty %}
+                                <li>No hay recursos registrados</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card mb-3">
+                        <div class="card-header">Categorías ({{ datos.categorias|length }})</div>
+                        <div class="card-body">
+                            <ul>
+                                {% for categoria in datos.categorias %}
+                                <li>{{ categoria.nombre }} (Carga de trabajo: {{ categoria.cargaTrabajo }})</li>
+                                {% empty %}
+                                <li>No hay categorías registradas</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

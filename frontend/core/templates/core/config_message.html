@@ -1,0 +1,41 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Enviar Mensaje de Configuración - Tecnologías Chapinas, S.A.{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Enviar Mensaje de Configuración</h2>
+    </div>
+    <div class="card-body">
+        {% if success %}
+        <div class="alert alert-success">
+            <h4>{{ message }}</h4>
+            <p>Resultados:</p>
+            <ul>
+                <li>Clientes creados: {{ resultados.clientes_creados }}</li>
+                <li>Instancias creadas: {{ resultados.instancias_creadas }}</li>
+                <li>Recursos creados: {{ resultados.recursos_creados }}</li>
+                <li>Categorías creadas: {{ resultados.categorias_creadas }}</li>
+                <li>Configuraciones creadas: {{ resultados.configuraciones_creadas }}</li>
+            </ul>
+        </div>
+        {% elif error %}
+        <div class="alert alert-danger">
+            <h4>Error</h4>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+        
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.xml_file.label_tag }}
+                {{ form.xml_file }}
+                <div class="form-text">{{ form.xml_file.help_text }}</div>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar Mensaje</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

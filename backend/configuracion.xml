@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<archivoConfiguraciones>
+  <listaRecursos>
+    <recurso id="1">
+      <nombre>Núcleos CPU</nombre>
+      <abreviatura>CPU</abreviatura>
+      <metrica>unidades</metrica>
+      <tipo>Hardware</tipo>
+      <valorXhora>1.20</valorXhora>
+    </recurso>
+  </listaRecursos>
+  <listaCategorias>
+    <categoria id="1">
+      <nombre>Test</nombre>
+      <descripcion>Test</descripcion>
+      <cargaTrabajo>Test</cargaTrabajo>
+      <listaConfiguraciones>
+        <configuracion id="1">
+          <nombre>Test Conf</nombre>
+          <descripcion>Test</descripcion>
+          <recursosConfiguracion>
+            <recurso id="1">1</recurso>
+          </recursosConfiguracion>
+        </configuracion>
+      </listaConfiguraciones>
+    </categoria>
+  </listaCategorias>
+  <listaClientes>
+    <cliente nit="12345-6">
+      <nombre>Test S.A.</nombre>
+      <usuario>test</usuario>
+      <clave>123</clave>
+      <direccion>Guatemala</direccion>
+      <correoElectronico>test@test.com</correoElectronico>
+      <listaInstancias>
+        <instancia id="1">
+          <idConfiguracion>1</idConfiguracion>
+          <nombre>Test Instancia</nombre>
+          <fechaInicio>01/01/2025</fechaInicio>
+          <estado>Vigente</estado>
+        </instancia>
+      </listaInstancias>
+    </cliente>
+  </listaClientes>
+</archivoConfiguraciones>

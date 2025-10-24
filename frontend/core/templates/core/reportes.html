@@ -1,0 +1,46 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Reportes en PDF - Tecnologías Chapinas, S.A.{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Reportes en PDF</h2>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Detalle de Factura</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Seleccione una factura para ver su detalle completo, incluyendo el desglose por instancia y recurso.</p>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="reporte_type" value="detalle_factura">
+                            <button type="submit" class="btn btn-primary">Ver Detalle de Factura</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Análisis de Ventas</h5>
+                    </div>
+                    <div class="card-body">
+                        <p>Analice las ventas por categorías, configuraciones o recursos en un rango de fechas específico.</p>
+                        <form method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="reporte_type" value="analisis_ventas">
+                            <button type="submit" class="btn btn-primary">Análisis de Ventas</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

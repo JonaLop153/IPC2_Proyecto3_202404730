@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<archivoConfiguraciones>
+  <listaRecursos>
+    <recurso id="1">
+      <nombre>CPU</nombre>
+      <abreviatura>CPU</abreviatura>
+      <metrica>unidades</metrica>
+      <tipo>Hardware</tipo>
+      <valorXhora>1.0</valorXhora>
+    </recurso>
+  </listaRecursos>
+</archivoConfiguraciones>

@@ -1,0 +1,93 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Detalle de Factura - Tecnologías Chapinas, S.A.{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Detalle de Factura</h2>
+    </div>
+    <div class="card-body">
+        {% if error %}
+        <div class="alert alert-danger">
+            <h4>Error</h4>
+            <p>{{ error }}</p>
+        </div>
+        {% elif factura %}
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>Información de la Factura</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Número de Factura:</strong> {{ factura.id }}</p>
+                        <p><strong>NIT del Cliente:</strong> {{ factura.nitCliente }}</p>
+                        <p><strong>Fecha de Emisión:</strong> {{ factura.fechaEmision }}</p>
+                        <p><strong>Monto Total:</strong> ${{ factura.montoTotal }}</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="card mb-3">
+                    <div class="card-header">
+                        <h5>Resumen</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Total de Instancias:</strong> {{ total_instancias }}</p>
+                        <p><strong>Total de Recursos:</strong> {{ total_recursos }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5>Detalle de Consumos</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Instancia</th>
+                            <th>Recurso</th>
+                            <th>Cantidad</th>
+                            <th>Tiempo Consumido (horas)</th>
+                            <th>Costo Unitario ($/hora)</th>
+                            <th>Costo Total ($)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detalle in factura.detalles %}
+                        <tr>
+                            <td>{{ detalle.nombre_instancia }} (ID: {{ detalle.id_instancia }})</td>
+                            <td>{{ detalle.nombre_recurso }} (ID: {{ detalle.id_recurso }})</td>
+                            <td>{{ detalle.cantidad }}</td>
+                            <td>{{ detalle.tiempo_consumido }}</td>
+                            <td>{{ detalle.costo_unitario }}</td>
+                            <td>{{ detalle.costo_total }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% else %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="factura_id" class="form-label">Seleccione una factura:</label>
+                <select class="form-select" id="factura_id" name="factura_id" required>
+                    <option value="">-- Seleccione una factura --</option>
+                    {% for factura in facturas %}
+                    <option value="{{ factura.id }}">Factura #{{ factura.id }} - {{ factura.nitCliente }} - ${{ factura.montoTotal }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Ver Detalle</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

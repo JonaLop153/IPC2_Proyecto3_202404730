@@ -1,0 +1,44 @@
+{% extends 'core/base.html' %}
+
+{% block title %}Proceso de Facturación - Tecnologías Chapinas, S.A.{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Proceso de Facturación</h2>
+    </div>
+    <div class="card-body">
+        {% if success %}
+        <div class="alert alert-success">
+            <h4>{{ message }}</h4>
+            {% if facturas %}
+            <h5>Facturas Generadas:</h5>
+            <ul>
+                {% for factura in facturas %}
+                <li>Factura #{{ factura.id }} - Cliente: {{ factura.nitCliente }} - Monto: ${{ factura.montoTotal }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% elif error %}
+        <div class="alert alert-danger">
+            <h4>Error</h4>
+            <p>{{ error }}</p>
+        </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                {{ form.fechaInicio.label_tag }}
+                {{ form.fechaInicio }}
+            </div>
+            <div class="mb-3">
+                {{ form.fechaFin.label_tag }}
+                {{ form.fechaFin }}
+            </div>
+            <button type="submit" class="btn btn-primary">Generar Facturas</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
