@@ -1,48 +1,60 @@
 {% extends 'core/base.html' %}
 
+{% block title %}Detalle de Factura - Tecnologías Chapinas, S.A.{% endblock %}
+
 {% block content %}
 <div class="container">
     <h2>Detalle de Factura</h2>
     
+    <!-- Mensajes de error -->
     {% if error %}
     <div class="alert alert-danger">
-        {{ error }}
+        <strong>Error:</strong> {{ error }}
     </div>
     {% endif %}
-    
+
     <!-- Formulario para seleccionar factura -->
     <div class="card mb-4">
         <div class="card-header">
             <h5>Seleccionar Factura</h5>
         </div>
         <div class="card-body">
-            <form method="post">
+            <form method="post" id="facturaForm">
                 {% csrf_token %}
                 <div class="mb-3">
                     <label for="factura_id" class="form-label">Número de Factura</label>
                     <select class="form-select" id="factura_id" name="factura_id" required>
-                        <option value="">Seleccione una factura</option>
+                        <option value="">-- Seleccione una factura --</option>
                         {% for factura in facturas %}
-                        <option value="{{ factura.id }}">Factura #{{ factura.id }} - {{ factura.nitCliente }} - Q{{ factura.montoTotal }}</option>
+                        <option value="{{ factura.id }}" 
+                                {% if factura_seleccionada and factura_seleccionada.id == factura.id %}selected{% endif %}>
+                            Factura #{{ factura.id }} - Cliente: {{ factura.nitCliente }} - Monto: Q{{ factura.montoTotal|floatformat:2 }}
+                        </option>
+                        {% empty %}
+                        <option value="">No hay facturas disponibles</option>
                         {% endfor %}
                     </select>
                 </div>
-                <button type="submit" class="btn btn-primary">Ver Detalle</button>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    Ver Detalle
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Mostrar detalle de factura -->
+    <!-- Mostrar detalle de factura si hay una seleccionada -->
     {% if factura %}
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5>Detalle de Factura #{{ factura.id }}</h5>
-            <!-- ✅ BOTÓN PARA DESCARGAR PDF -->
-            <a href="{% url 'descargar_pdf_factura' factura.id %}" class="btn btn-danger">
-    📄 Descargar PDF
-</a>
+            <div>
+                <a href="{% url 'descargar_pdf_factura' factura.id %}" class="btn btn-danger">
+                    📄 Descargar PDF
+                </a>
+            </div>
         </div>
         <div class="card-body">
+            <!-- Información general -->
             <div class="row mb-4">
                 <div class="col-md-6">
                     <p><strong>NIT Cliente:</strong> {{ factura.nitCliente }}</p>
@@ -55,10 +67,12 @@
                 </div>
             </div>
 
+            <!-- Detalles de la factura -->
             <h6>Detalles de Consumo</h6>
+            {% if factura.detalles %}
             <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
+                <table class="table table-striped table-bordered">
+                    <thead class="table-dark">
                         <tr>
                             <th>Instancia</th>
                             <th>Recurso</th>
@@ -73,17 +87,64 @@
                         <tr>
                             <td>{{ detalle.nombre_instancia }}</td>
                             <td>{{ detalle.nombre_recurso }}</td>
-                            <td>{{ detalle.cantidad|floatformat:2 }}</td>
-                            <td>{{ detalle.tiempo_consumido|floatformat:2 }}</td>
-                            <td>Q{{ detalle.costo_unitario|floatformat:2 }}</td>
-                            <td>Q{{ detalle.costo_total|floatformat:2 }}</td>
+                            <td class="text-end">{{ detalle.cantidad|floatformat:2 }}</td>
+                            <td class="text-end">{{ detalle.tiempo_consumido|floatformat:2 }}</td>
+                            <td class="text-end">Q{{ detalle.costo_unitario|floatformat:2 }}</td>
+                            <td class="text-end">Q{{ detalle.costo_total|floatformat:2 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
+                    <tfoot class="table-primary">
+                        <tr>
+                            <td colspan="5" class="text-end"><strong>Total General:</strong></td>
+                            <td class="text-end"><strong>Q{{ factura.montoTotal|floatformat:2 }}</strong></td>
+                        </tr>
+                    </tfoot>
                 </table>
             </div>
+            {% else %}
+            <div class="alert alert-warning">
+                No hay detalles disponibles para esta factura.
+            </div>
+            {% endif %}
         </div>
     </div>
     {% endif %}
 </div>
+
+<!-- JavaScript para debug y mejor UX -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('✅ Página de detalle de factura cargada correctamente');
+    
+    const form = document.getElementById('facturaForm');
+    const select = document.getElementById('factura_id');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    console.log('📊 Facturas en dropdown:', select.options.length - 1);
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            const selectedValue = select.value;
+            console.log('🔄 Enviando formulario, factura seleccionada:', selectedValue);
+            
+            if (!selectedValue) {
+                e.preventDefault();
+                alert('Por favor seleccione una factura');
+                return false;
+            }
+        });
+    }
+    
+    // Habilitar/deshabilitar botón según selección
+    if (select && submitBtn) {
+        select.addEventListener('change', function() {
+            submitBtn.disabled = !this.value;
+        });
+        
+        // Estado inicial
+        submitBtn.disabled = !select.value;
+    }
+});
+</script>
 {% endblock %}

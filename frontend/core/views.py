@@ -78,7 +78,7 @@ def enviar_mensaje_consumo(request):
                         context = {'form': form, 'error': result.get('message', 'Error desconocido')}
             except requests.exceptions.ConnectionError:
                 context = {'form': form, 'error': 'No se pudo conectar con el backend.'}
-            except Exception as e:
+            except Exception as e:  # ✅ CORREGIDO: Especificar el tipo de excepción
                 context = {'form': form, 'error': f'Error: {str(e)}'}
         else:
             context = {'form': form, 'error': 'Formulario inválido'}
@@ -97,8 +97,8 @@ def operaciones_sistema(request):
             result = response.json()
             if result.get('success'):
                 context['datos_sistema'] = result['data']
-    except:
-        pass
+    except Exception:  # ✅ CORREGIDO: Especificar el tipo de excepción
+        pass 
     
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -366,37 +366,76 @@ def reportes_pdf(request):
     return render(request, 'core/reportes.html')
 
 def detalle_factura(request):
+    print("🔍 Vista detalle_factura llamada")  # Debug
+    
+    # Siempre obtener la lista de facturas
+    try:
+        response = requests.get(f'{BACKEND_URL}/facturas')
+        result = response.json()
+        
+        if result.get('success'):
+            facturas = result['facturas']
+            print(f"📊 Facturas obtenidas del backend: {len(facturas)}")  # Debug
+            for factura in facturas:
+                print(f"   - Factura {factura['id']}: {factura['nitCliente']} - Q{factura['montoTotal']}")
+        else:
+            facturas = []
+            print(f"❌ Error al obtener facturas: {result.get('message')}")  # Debug
+    except Exception as e:
+        facturas = []
+        print(f"❌ Error de conexión al obtener facturas: {str(e)}")  # Debug
+    
+    # Inicializar contexto
+    context = {
+        'facturas': facturas,
+        'factura': None,
+        'total_instancias': 0,
+        'total_recursos': 0
+    }
+    
+    # Si es POST, procesar la factura seleccionada
     if request.method == 'POST':
         factura_id = request.POST.get('factura_id')
+        print(f"📋 Factura seleccionada: {factura_id}")  # Debug
         
-        try:
-            response = requests.get(f'{BACKEND_URL}/factura/{factura_id}')
-            result = response.json()
-            
-            if result.get('success'):
-                factura = result['factura']
-                context = {
-                    'factura': factura,
-                    'total_instancias': len(set([d['id_instancia'] for d in factura['detalles']])),
-                    'total_recursos': len(set([d['id_recurso'] for d in factura['detalles']]))
-                }
-                return render(request, 'core/detalle_factura.html', context)
-            else:
-                context = {'error': result.get('message', 'Error al obtener factura')}
-        except Exception as e:
-            context = {'error': f'Error al conectar con el backend: {str(e)}'}
-    else:
-        try:
-            response = requests.get(f'{BACKEND_URL}/facturas')
-            result = response.json()
-            
-            if result.get('success'):
-                facturas = result['facturas']
-                context = {'facturas': facturas}
-            else:
-                context = {'error': result.get('message', 'Error al obtener facturas')}
-        except Exception as e:
-            context = {'error': f'Error al conectar con el backend: {str(e)}'}
+        if factura_id:
+            try:
+                response = requests.get(f'{BACKEND_URL}/factura/{factura_id}')
+                result = response.json()
+                
+                if result.get('success'):
+                    factura = result['factura']
+                    print(f"✅ Factura encontrada: ID {factura['id']}")  # Debug
+                    print(f"📋 Detalles de la factura: {len(factura.get('detalles', []))} items")  # Debug
+                    
+                    # Calcular métricas
+                    instancias_unicas = set()
+                    recursos_unicos = set()
+                    
+                    for detalle in factura.get('detalles', []):
+                        instancias_unicas.add(detalle['id_instancia'])
+                        recursos_unicos.add(detalle['id_recurso'])
+                    
+                    context.update({
+                        'factura': factura,
+                        'total_instancias': len(instancias_unicas),
+                        'total_recursos': len(recursos_unicos),
+                        'factura_seleccionada_id': factura_id  # Para mantener la selección
+                    })
+                    
+                    print(f"📊 Métricas calculadas: {len(instancias_unicas)} instancias, {len(recursos_unicos)} recursos")
+                    
+                else:
+                    error_msg = result.get('message', 'Error al obtener factura')
+                    print(f"❌ Error: {error_msg}")  # Debug
+                    context['error'] = error_msg
+                    
+            except Exception as e:
+                error_msg = f'Error al conectar con el backend: {str(e)}'
+                print(f"❌ Error: {error_msg}")  # Debug
+                context['error'] = error_msg
+        else:
+            context['error'] = 'Por favor seleccione una factura'
     
     return render(request, 'core/detalle_factura.html', context)
 
@@ -407,7 +446,10 @@ def analisis_ventas(request):
             fecha_inicio = form.cleaned_data['fecha_inicio']
             fecha_fin = form.cleaned_data['fecha_fin']
             
+            print(f"📊 Análisis de ventas solicitado: {fecha_inicio} a {fecha_fin}")  # Debug
+            
             try:
+                # Obtener todas las facturas
                 response = requests.get(f'{BACKEND_URL}/facturas')
                 result = response.json()
                 
@@ -415,37 +457,53 @@ def analisis_ventas(request):
                     facturas = result['facturas']
                     facturas_rango = []
                     
+                    print(f"📋 Total de facturas disponibles: {len(facturas)}")  # Debug
+                    
                     for factura in facturas:
                         fecha_emision_str = factura['fechaEmision']
                         fecha_emision = datetime.strptime(fecha_emision_str, '%d/%m/%Y').date()
                         
+                        print(f"   - Factura {factura['id']}: {fecha_emision}")  # Debug
+                        
                         if fecha_inicio <= fecha_emision <= fecha_fin:
                             facturas_rango.append(factura)
+                            print("     ✅ EN RANGO")  # Debug
+                        else:
+                            print("     ❌ FUERA DE RANGO")  # Debug
+                    
+                    print(f"📊 Facturas en rango: {len(facturas_rango)}")  # Debug
                     
                     if facturas_rango:
+                        # Análisis por categorías y configuraciones
                         categorias_ingresos = {}
                         configuraciones_ingresos = {}
                         recursos_ingresos = {}
                         
                         for factura in facturas_rango:
+                            print(f"📋 Procesando factura {factura['id']} con {len(factura['detalles'])} detalles")  # Debug
+                            
                             for detalle in factura['detalles']:
+                                # Obtener configuración
                                 instancia = get_instancia_by_id(detalle['id_instancia'])
                                 if instancia:
                                     configuracion = get_configuracion_by_id(instancia['idConfiguracion'])
                                     if configuracion:
                                         categoria = get_categoria_by_id(configuracion['idCategoria'])
                                         
+                                        # Categorías
                                         if categoria:
                                             cat_nombre = categoria['nombre']
                                             if cat_nombre not in categorias_ingresos:
                                                 categorias_ingresos[cat_nombre] = 0
                                             categorias_ingresos[cat_nombre] += detalle['costo_total']
                                         
+                                        # Configuraciones
                                         conf_nombre = configuracion['nombre']
                                         if conf_nombre not in configuraciones_ingresos:
                                             configuraciones_ingresos[conf_nombre] = 0
                                         configuraciones_ingresos[conf_nombre] += detalle['costo_total']
                                 
+                                # Recursos
                                 recurso_nombre = detalle['nombre_recurso']
                                 if recurso_nombre not in recursos_ingresos:
                                     recursos_ingresos[recurso_nombre] = 0
@@ -453,6 +511,12 @@ def analisis_ventas(request):
                         
                         total_ingresos_valor = sum([f['montoTotal'] for f in facturas_rango])
                         
+                        print(f"💰 Total ingresos: {total_ingresos_valor}")  # Debug
+                        print(f"📊 Categorías: {len(categorias_ingresos)}")  # Debug
+                        print(f"📊 Configuraciones: {len(configuraciones_ingresos)}")  # Debug
+                        print(f"📊 Recursos: {len(recursos_ingresos)}")  # Debug
+                        
+                        # Ordenar por ingresos y calcular porcentajes
                         categorias_con_porcentaje = []
                         for categoria, ingreso in sorted(categorias_ingresos.items(), key=lambda x: x[1], reverse=True):
                             porcentaje = (ingreso / total_ingresos_valor * 100) if total_ingresos_valor > 0 else 0
@@ -485,7 +549,7 @@ def analisis_ventas(request):
                             'fecha_inicio': fecha_inicio.strftime('%d/%m/%Y'),
                             'fecha_fin': fecha_fin.strftime('%d/%m/%Y'),
                             'hay_datos': False,
-                            'message': 'No hay facturas en el rango de fechas seleccionado.'
+                            'message': f'No hay facturas emitidas en el rango de fechas seleccionado ({fecha_inicio.strftime("%d/%m/%Y")} a {fecha_fin.strftime("%d/%m/%Y")}).'
                         }
                 else:
                     context = {'form': form, 'error': result.get('message', 'Error al obtener datos')}
@@ -531,21 +595,51 @@ def ayuda(request):
 def descargar_pdf_factura(request, id_factura):
     """Descarga el PDF de una factura específica"""
     try:
+        print(f"📄 Solicitando PDF para factura {id_factura}")  # Debug
+        
+        # Llamar al backend para generar el PDF
         response = requests.get(f'{BACKEND_URL}/generar-pdf-factura/{id_factura}')
         
+        print(f"📊 Respuesta del backend: {response.status_code}")  # Debug
+        
         if response.status_code == 200:
-            pdf_response = HttpResponse(
-                response.content,
-                content_type='application/pdf'
-            )
-            pdf_response['Content-Disposition'] = f'attachment; filename="factura_{id_factura}.pdf"'
-            return pdf_response
+            # Verificar que la respuesta es un PDF
+            content_type = response.headers.get('Content-Type', '')
+            print(f"📋 Content-Type: {content_type}")  # Debug
+            
+            if 'application/pdf' in content_type:
+                # Devolver el PDF como respuesta
+                pdf_response = HttpResponse(
+                    response.content,
+                    content_type='application/pdf'
+                )
+                pdf_response['Content-Disposition'] = f'attachment; filename="factura_{id_factura}.pdf"'
+                print(f"✅ PDF generado exitosamente para factura {id_factura}")  # Debug
+                return pdf_response
+            else:
+                # Si no es PDF, puede ser un JSON de error
+                try:
+                    error_data = response.json()
+                    error_msg = error_data.get('message', 'Error desconocido al generar PDF')
+                    print(f"❌ Error del backend: {error_msg}")  # Debug
+                    return HttpResponse(f"Error del backend: {error_msg}", status=400)
+                except:
+                    return HttpResponse("Error: La respuesta no es un PDF válido", status=400)
         else:
-            error_data = response.json()
-            return HttpResponse(f"Error: {error_data.get('message', 'Error desconocido')}", status=400)
+            # Intentar obtener mensaje de error del backend
+            try:
+                error_data = response.json()
+                error_msg = error_data.get('message', f'Error HTTP {response.status_code}')
+            except:
+                error_msg = f'Error HTTP {response.status_code}'
+            
+            print(f"❌ Error del backend: {error_msg}")  # Debug
+            return HttpResponse(f"Error: {error_msg}", status=400)
             
     except Exception as e:
-        return HttpResponse(f"Error al generar PDF: {str(e)}", status=500)
+        error_msg = f'Error al generar PDF: {str(e)}'
+        print(f"❌ Error general: {error_msg}")  # Debug
+        return HttpResponse(error_msg, status=500)
 
 def descargar_pdf_analisis(request):
     """Descarga el PDF de análisis de ventas"""

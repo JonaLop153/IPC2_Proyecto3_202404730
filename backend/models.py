@@ -567,12 +567,15 @@ class Factura(ModeloBase):
     def __init__(self, nit_cliente, fecha_emision, monto_total, detalles):
         self.id = self._generar_id_factura()
         self.nit_cliente = nit_cliente
-        self.fecha_emision = fecha_emision  # ✅ Debe ser un objeto datetime
+        self.fecha_emision = fecha_emision
         self.monto_total = monto_total
         self.detalles = detalles
     
     def _generar_id_factura(self):
-        return int(datetime.now().timestamp())  # ✅ También necesita datetime aquí
+        # ✅ CORREGIDO: Usar timestamp más un random para evitar duplicados
+        import time
+        import random
+        return int(time.time() * 1000) + random.randint(100, 999)  # ✅ También necesita datetime aquí
     
     def guardar(self):
         root = self._obtener_root()

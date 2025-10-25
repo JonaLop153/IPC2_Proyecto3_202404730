@@ -104,5 +104,7 @@ def obtener_recursos_configuracion(id_configuracion):
                     'valor_hora': recurso.valor_hora
                 })
         return jsonify({'success': True, 'recursos': recursos_data})
+    
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
+    

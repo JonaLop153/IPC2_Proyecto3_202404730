@@ -16,11 +16,8 @@
                     </div>
                     <div class="card-body">
                         <p>Seleccione una factura para ver su detalle completo, incluyendo el desglose por instancia y recurso.</p>
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="reporte_type" value="detalle_factura">
-                            <button type="submit" class="btn btn-primary">Ver Detalle de Factura</button>
-                        </form>
+                        <!-- ✅ CORREGIDO: Usar enlace directo en lugar de formulario -->
+                        <a href="{% url 'detalle_factura' %}" class="btn btn-primary">Ver Detalle de Factura</a>
                     </div>
                 </div>
             </div>
@@ -32,11 +29,8 @@
                     </div>
                     <div class="card-body">
                         <p>Analice las ventas por categorías, configuraciones o recursos en un rango de fechas específico.</p>
-                        <form method="post">
-                            {% csrf_token %}
-                            <input type="hidden" name="reporte_type" value="analisis_ventas">
-                            <button type="submit" class="btn btn-primary">Análisis de Ventas</button>
-                        </form>
+                        <!-- ✅ CORREGIDO: Usar enlace directo -->
+                        <a href="{% url 'analisis_ventas' %}" class="btn btn-primary">Análisis de Ventas</a>
                     </div>
                 </div>
             </div>

@@ -115,19 +115,25 @@ def obtener_recursos_configuracion_route(id_configuracion):
 def generar_pdf_factura_route(id_factura):
     """Genera y descarga el PDF de una factura"""
     try:
-        # Obtener datos de la factura
-        factura_data = obtener_factura(id_factura)
-        if not factura_data:
-            return jsonify({'success': False, 'message': 'Factura no encontrada'}), 404
+        print(f"📄 Generando PDF para factura {id_factura}")  # Debug
         
-        # Convertir a dict si es necesario
-        if hasattr(factura_data, 'to_dict'):
-            factura_dict = factura_data.to_dict()
+        # Obtener datos de la factura usando la función correcta
+        factura_result = obtener_factura(id_factura)
+        
+        # Verificar si es un objeto Factura o un dict
+        if hasattr(factura_result, 'to_dict'):
+            factura_data = factura_result.to_dict()
+        elif isinstance(factura_result, dict):
+            factura_data = factura_result
         else:
-            factura_dict = factura_data
+            return jsonify({'success': False, 'message': 'Formato de factura no válido'}), 500
+        
+        print(f"✅ Datos de factura obtenidos: {factura_data['id']}")  # Debug
         
         # Generar PDF
-        pdf_path = generar_pdf_factura(factura_dict)
+        pdf_path = generar_pdf_factura(factura_data)
+        
+        print(f"✅ PDF generado en: {pdf_path}")  # Debug
         
         # Enviar archivo para descarga
         return send_file(
@@ -138,6 +144,9 @@ def generar_pdf_factura_route(id_factura):
         )
         
     except Exception as e:
+        print(f"❌ Error al generar PDF: {str(e)}")  # Debug
+        import traceback
+        print(f"📋 Traceback: {traceback.format_exc()}")  # Debug
         return jsonify({'success': False, 'message': f'Error al generar PDF: {str(e)}'}), 500
 
 @app.route('/generar-pdf-analisis-ventas', methods=['POST'])
