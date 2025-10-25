@@ -1,93 +1,89 @@
 {% extends 'core/base.html' %}
 
-{% block title %}Detalle de Factura - Tecnologías Chapinas, S.A.{% endblock %}
-
 {% block content %}
-<div class="card">
-    <div class="card-header">
-        <h2>Detalle de Factura</h2>
+<div class="container">
+    <h2>Detalle de Factura</h2>
+    
+    {% if error %}
+    <div class="alert alert-danger">
+        {{ error }}
     </div>
-    <div class="card-body">
-        {% if error %}
-        <div class="alert alert-danger">
-            <h4>Error</h4>
-            <p>{{ error }}</p>
+    {% endif %}
+    
+    <!-- Formulario para seleccionar factura -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Seleccionar Factura</h5>
         </div>
-        {% elif factura %}
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h5>Información de la Factura</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Número de Factura:</strong> {{ factura.id }}</p>
-                        <p><strong>NIT del Cliente:</strong> {{ factura.nitCliente }}</p>
-                        <p><strong>Fecha de Emisión:</strong> {{ factura.fechaEmision }}</p>
-                        <p><strong>Monto Total:</strong> ${{ factura.montoTotal }}</p>
-                    </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="factura_id" class="form-label">Número de Factura</label>
+                    <select class="form-select" id="factura_id" name="factura_id" required>
+                        <option value="">Seleccione una factura</option>
+                        {% for factura in facturas %}
+                        <option value="{{ factura.id }}">Factura #{{ factura.id }} - {{ factura.nitCliente }} - Q{{ factura.montoTotal }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary">Ver Detalle</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mostrar detalle de factura -->
+    {% if factura %}
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Detalle de Factura #{{ factura.id }}</h5>
+            <!-- ✅ BOTÓN PARA DESCARGAR PDF -->
+            <a href="{% url 'generar_pdf_factura' factura.id %}" class="btn btn-danger">
+                📄 Descargar PDF
+            </a>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <p><strong>NIT Cliente:</strong> {{ factura.nitCliente }}</p>
+                    <p><strong>Fecha de Emisión:</strong> {{ factura.fechaEmision }}</p>
+                </div>
+                <div class="col-md-6">
+                    <p><strong>Monto Total:</strong> Q{{ factura.montoTotal|floatformat:2 }}</p>
+                    <p><strong>Total Instancias:</strong> {{ total_instancias }}</p>
+                    <p><strong>Total Recursos:</strong> {{ total_recursos }}</p>
                 </div>
             </div>
-            
-            <div class="col-md-6">
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <h5>Resumen</h5>
-                    </div>
-                    <div class="card-body">
-                        <p><strong>Total de Instancias:</strong> {{ total_instancias }}</p>
-                        <p><strong>Total de Recursos:</strong> {{ total_recursos }}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card">
-            <div class="card-header">
-                <h5>Detalle de Consumos</h5>
-            </div>
-            <div class="card-body">
+
+            <h6>Detalles de Consumo</h6>
+            <div class="table-responsive">
                 <table class="table table-striped">
                     <thead>
                         <tr>
                             <th>Instancia</th>
                             <th>Recurso</th>
                             <th>Cantidad</th>
-                            <th>Tiempo Consumido (horas)</th>
-                            <th>Costo Unitario ($/hora)</th>
-                            <th>Costo Total ($)</th>
+                            <th>Tiempo (horas)</th>
+                            <th>Costo Unitario</th>
+                            <th>Costo Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for detalle in factura.detalles %}
                         <tr>
-                            <td>{{ detalle.nombre_instancia }} (ID: {{ detalle.id_instancia }})</td>
-                            <td>{{ detalle.nombre_recurso }} (ID: {{ detalle.id_recurso }})</td>
-                            <td>{{ detalle.cantidad }}</td>
-                            <td>{{ detalle.tiempo_consumido }}</td>
-                            <td>{{ detalle.costo_unitario }}</td>
-                            <td>{{ detalle.costo_total }}</td>
+                            <td>{{ detalle.nombre_instancia }}</td>
+                            <td>{{ detalle.nombre_recurso }}</td>
+                            <td>{{ detalle.cantidad|floatformat:2 }}</td>
+                            <td>{{ detalle.tiempo_consumido|floatformat:2 }}</td>
+                            <td>Q{{ detalle.costo_unitario|floatformat:2 }}</td>
+                            <td>Q{{ detalle.costo_total|floatformat:2 }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
-        {% else %}
-        <form method="post">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="factura_id" class="form-label">Seleccione una factura:</label>
-                <select class="form-select" id="factura_id" name="factura_id" required>
-                    <option value="">-- Seleccione una factura --</option>
-                    {% for factura in facturas %}
-                    <option value="{{ factura.id }}">Factura #{{ factura.id }} - {{ factura.nitCliente }} - ${{ factura.montoTotal }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Ver Detalle</button>
-        </form>
-        {% endif %}
     </div>
+    {% endif %}
 </div>
 {% endblock %}

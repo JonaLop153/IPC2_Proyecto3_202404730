@@ -36,6 +36,13 @@
       <tipo>Software</tipo>
       <valorXhora>5.0</valorXhora>
     </recurso>
+    <recurso id="6">
+      <nombre>fss</nombre>
+      <abreviatura>sfs</abreviatura>
+      <metrica>sfsf</metrica>
+      <tipo>Hardware</tipo>
+      <valorXhora>23.0</valorXhora>
+    </recurso>
   </recursos>
   <categorias>
     <categoria id="1">
@@ -52,6 +59,11 @@
       <nombre>Servidores Empresariales</nombre>
       <descripcion>Configuraciones para servidores empresariales</descripcion>
       <cargaTrabajo>Cargas de trabajo empresariales</cargaTrabajo>
+    </categoria>
+    <categoria id="4">
+      <nombre>dss</nombre>
+      <descripcion>dsdsd</descripcion>
+      <cargaTrabajo>dsdds</cargaTrabajo>
     </categoria>
   </categorias>
   <configuraciones>
@@ -96,6 +108,11 @@
         <recurso id="4">1.0</recurso>
       </recursosConfiguracion>
     </configuracion>
+    <configuracion id="5">
+      <nombre>sd</nombre>
+      <descripcion>dsd</descripcion>
+      <idCategoria>2</idCategoria>
+    </configuracion>
   </configuraciones>
   <clientes>
     <cliente nit="12345-6">
@@ -118,6 +135,13 @@
       <clave>corp789</clave>
       <direccion>Guatemala City</direccion>
       <correoElectronico>admin@corporaciongrande.com</correoElectronico>
+    </cliente>
+    <cliente nit="3020">
+      <nombre>Juan Perez</nombre>
+      <usuario>sdsdsd</usuario>
+      <clave>eedds</clave>
+      <direccion>dsfsfsf</direccion>
+      <correoElectronico>ddsdsd@gmail.com</correoElectronico>
     </cliente>
   </clientes>
   <instancias>
@@ -193,7 +217,7 @@
     </consumo>
   </consumos>
   <facturas>
-    <factura id="1761329495">
+    <factura id="1761356996">
       <nitCliente>12345-6</nitCliente>
       <fechaEmision>24/10/2025</fechaEmision>
       <montoTotal>1406.6</montoTotal>
@@ -290,7 +314,7 @@
         </detalle>
       </detalles>
     </factura>
-    <factura id="1761329495">
+    <factura id="1761356996">
       <nitCliente>78901-2</nitCliente>
       <fechaEmision>24/10/2025</fechaEmision>
       <montoTotal>8964.8</montoTotal>
@@ -357,7 +381,7 @@
         </detalle>
       </detalles>
     </factura>
-    <factura id="1761329654">
+    <factura id="1761357019">
       <nitCliente>12345-6</nitCliente>
       <fechaEmision>24/10/2025</fechaEmision>
       <montoTotal>1266.2</montoTotal>
@@ -424,7 +448,7 @@
         </detalle>
       </detalles>
     </factura>
-    <factura id="1761329654">
+    <factura id="1761357019">
       <nitCliente>78901-2</nitCliente>
       <fechaEmision>24/10/2025</fechaEmision>
       <montoTotal>4576.0</montoTotal>
@@ -461,7 +485,7 @@
         </detalle>
       </detalles>
     </factura>
-    <factura id="1761329654">
+    <factura id="1761357019">
       <nitCliente>34567-8</nitCliente>
       <fechaEmision>24/10/2025</fechaEmision>
       <montoTotal>12991.275</montoTotal>

@@ -88,3 +88,16 @@ def calcular_costo_recurso(valor_hora, cantidad, tiempo_consumido):
         float: Costo total.
     """
     return valor_hora * cantidad * tiempo_consumido
+
+def limpiar_xml(xml_data):
+    """Limpia el XML removiendo BOM y espacios innecesarios"""
+    if isinstance(xml_data, bytes):
+        if xml_data.startswith(b'\xef\xbb\xbf'):
+            xml_data = xml_data[3:]
+        xml_str = xml_data.decode('utf-8').strip()
+    else:
+        xml_str = str(xml_data).strip()
+    
+    xml_str = xml_str.lstrip()
+    
+    return xml_str
