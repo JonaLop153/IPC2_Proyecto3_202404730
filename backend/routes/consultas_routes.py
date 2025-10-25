@@ -2,6 +2,7 @@ from flask import jsonify
 from models import Recurso, Categoria, Configuracion, Cliente, Instancia, Consumo, Factura, RecursoConfiguracion
 import xml.etree.ElementTree as ET
 import os
+from datetime import datetime
 
 def reset_datos():
     try:
@@ -52,13 +53,28 @@ def obtener_facturas():
 
 def obtener_factura(id_factura):
     try:
-        factura = Factura.obtener_por_id(id_factura)
-        if factura:
-            return jsonify({'success': True, 'factura': factura.to_dict()})
-        else:
-            return jsonify({'success': False, 'message': 'Factura no encontrada'}), 404
+        print(f"🔍 Buscando factura ID: {id_factura}")
+        
+        # Método simple y confiable: usar obtener_todas
+        facturas_todas = Factura.obtener_todas()
+        print(f"📄 Total de facturas disponibles: {len(facturas_todas)}")
+        
+        for factura in facturas_todas:
+            if factura.id == id_factura:
+                print(f"✅ Factura encontrada: {factura.id}")
+                return jsonify({
+                    'success': True, 
+                    'factura': factura.to_dict()
+                })
+        
+        print(f"❌ Factura {id_factura} no encontrada")
+        return jsonify({'success': False, 'message': 'Factura no encontrada'}), 404
+        
     except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
+        import traceback
+        print(f"❌ ERROR en obtener_factura: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({'success': False, 'message': f'Error: {str(e)}'}), 500
 
 def obtener_instancia(id_instancia):
     try:
@@ -104,7 +120,5 @@ def obtener_recursos_configuracion(id_configuracion):
                     'valor_hora': recurso.valor_hora
                 })
         return jsonify({'success': True, 'recursos': recursos_data})
-    
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
-    

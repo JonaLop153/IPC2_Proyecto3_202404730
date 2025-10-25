@@ -7,10 +7,7 @@ def consumo():
         print("=== INICIANDO PROCESAMIENTO CONSUMO ===")
         
         xml_data = request.get_data()
-        print(f"Datos recibidos (primeros 200 chars): {xml_data[:200]}")
-        
         xml_str = limpiar_xml(xml_data)
-        print(f"XML limpio (primeros 200 chars): {xml_str[:200]}")
         
         if not xml_str:
             return jsonify({
@@ -28,18 +25,29 @@ def consumo():
             id_instancia = int(consumo_elem.get('idInstancia'))
             tiempo = float(consumo_elem.find('tiempo').text)
             
-            fecha_hora_elem = consumo_elem.find('fechahora')
-            if fecha_hora_elem is not None:
+            # ✅ BUSCAR TODAS LAS POSIBLES VARIANTES
+            fecha_hora_elem = None
+            for tag_name in ['fechahora', 'fechaHora', 'fecha_hora']:
+                fecha_hora_elem = consumo_elem.find(tag_name)
+                if fecha_hora_elem is not None:
+                    break
+            
+            if fecha_hora_elem is not None and fecha_hora_elem.text:
                 fecha_hora_str = fecha_hora_elem.text
                 fecha_hora = extraer_fecha_hora(fecha_hora_str)
                 
-                print(f"Procesando consumo: Instancia {id_instancia}, Cliente {nit_cliente}, Tiempo {tiempo}")
-                
-                nuevo_consumo = Consumo(id_instancia, nit_cliente, tiempo, fecha_hora)
-                if nuevo_consumo.guardar():
-                    consumos_procesados += 1
+                if fecha_hora:
+                    print(f"✅ Procesando consumo: Instancia {id_instancia}, Tiempo {tiempo}h, Fecha {fecha_hora}")
+                    
+                    nuevo_consumo = Consumo(id_instancia, nit_cliente, tiempo, fecha_hora)
+                    if nuevo_consumo.guardar():
+                        consumos_procesados += 1
+                else:
+                    print(f"❌ Fecha inválida o no extraíble: {fecha_hora_str}")
+            else:
+                print("❌ No se encontró elemento de fecha/hora")
         
-        print(f"Consumos procesados: {consumos_procesados}")
+        print(f"📊 Consumos procesados: {consumos_procesados}")
         
         return jsonify({
             'success': True,

@@ -461,15 +461,22 @@ def analisis_ventas(request):
                     
                     for factura in facturas:
                         fecha_emision_str = factura['fechaEmision']
-                        fecha_emision = datetime.strptime(fecha_emision_str, '%d/%m/%Y').date()
+                        print(f"   - Factura {factura['id']}: Fecha emisión string = '{fecha_emision_str}'")  # Debug
                         
-                        print(f"   - Factura {factura['id']}: {fecha_emision}")  # Debug
-                        
-                        if fecha_inicio <= fecha_emision <= fecha_fin:
-                            facturas_rango.append(factura)
-                            print("     ✅ EN RANGO")  # Debug
-                        else:
-                            print("     ❌ FUERA DE RANGO")  # Debug
+                        try:
+                            # Intentar parsear la fecha
+                            fecha_emision = datetime.strptime(fecha_emision_str, '%d/%m/%Y').date()
+                            print(f"     Fecha parseada: {fecha_emision}")  # Debug
+                            
+                            if fecha_inicio <= fecha_emision <= fecha_fin:
+                                facturas_rango.append(factura)
+                                print(f"     ✅ EN RANGO")  # Debug
+                            else:
+                                print(f"     ❌ FUERA DE RANGO (buscando {fecha_inicio} a {fecha_fin})")  # Debug
+                                
+                        except ValueError as e:
+                            print(f"     ❌ ERROR parseando fecha: {e}")  # Debug
+                            continue
                     
                     print(f"📊 Facturas en rango: {len(facturas_rango)}")  # Debug
                     
@@ -544,12 +551,17 @@ def analisis_ventas(request):
                             'hay_datos': True
                         }
                     else:
+                        # ✅ MOSTRAR FACTURAS DISPONIBLES PARA AYUDAR
+                        fechas_disponibles = []
+                        for factura in facturas:
+                            fechas_disponibles.append(factura['fechaEmision'])
+                        
                         context = {
                             'form': form,
                             'fecha_inicio': fecha_inicio.strftime('%d/%m/%Y'),
                             'fecha_fin': fecha_fin.strftime('%d/%m/%Y'),
                             'hay_datos': False,
-                            'message': f'No hay facturas emitidas en el rango de fechas seleccionado ({fecha_inicio.strftime("%d/%m/%Y")} a {fecha_fin.strftime("%d/%m/%Y")}).'
+                            'message': f'No hay facturas emitidas en el rango seleccionado. Fechas disponibles: {", ".join(set(fechas_disponibles))}'
                         }
                 else:
                     context = {'form': form, 'error': result.get('message', 'Error al obtener datos')}

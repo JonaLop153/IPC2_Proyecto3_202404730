@@ -13,16 +13,9 @@ from routes.consultas_routes import (
     obtener_categoria, obtener_recursos_configuracion
 )
 from pdf_generator import generar_pdf_factura, generar_pdf_analisis_ventas
+from models import Factura
 import os
 
-# ✅ CORREGIDO: Importar desde el archivo pdf_generator directamente
-try:
-    from pdf_generator import generar_pdf_factura, generar_pdf_analisis_ventas
-except ImportError:
-    # Si falla, intentar desde utils
-    from backend.pdf_generator import generar_pdf_factura, generar_pdf_analisis_ventas
-
-import os
 
 app = Flask(__name__)
 
@@ -113,27 +106,40 @@ def obtener_recursos_configuracion_route(id_configuracion):
 # PDF Routes
 @app.route('/generar-pdf-factura/<int:id_factura>', methods=['GET'])
 def generar_pdf_factura_route(id_factura):
-    """Genera y descarga el PDF de una factura"""
+    """Genera y descarga el PDF de una factura - Versión robusta"""
     try:
-        print(f"📄 Generando PDF para factura {id_factura}")  # Debug
+        print(f"=== SOLICITUD PDF PARA FACTURA {id_factura} ===")
         
-        # Obtener datos de la factura usando la función correcta
-        factura_result = obtener_factura(id_factura)
+        # Método robusto: Usar obtener_todas() que sabemos que funciona
+        print("🔍 Buscando factura usando obtener_todas()...")
+        facturas_todas = Factura.obtener_todas()
+        print(f"📄 Facturas disponibles: {len(facturas_todas)}")
         
-        # Verificar si es un objeto Factura o un dict
-        if hasattr(factura_result, 'to_dict'):
-            factura_data = factura_result.to_dict()
-        elif isinstance(factura_result, dict):
-            factura_data = factura_result
-        else:
-            return jsonify({'success': False, 'message': 'Formato de factura no válido'}), 500
+        factura_encontrada = None
+        for factura in facturas_todas:
+            print(f"   - Factura ID: {factura.id}")
+            if factura.id == id_factura:
+                factura_encontrada = factura
+                break
         
-        print(f"✅ Datos de factura obtenidos: {factura_data['id']}")  # Debug
+        if not factura_encontrada:
+            return jsonify({'success': False, 'message': f'Factura {id_factura} no encontrada'}), 404
+        
+        print(f"✅ Factura encontrada: ID {factura_encontrada.id}")
+        
+        # Convertir a diccionario
+        factura_dict = factura_encontrada.to_dict()
+        
+        # Validar estructura
+        required_fields = ['id', 'nitCliente', 'fechaEmision', 'montoTotal', 'detalles']
+        for field in required_fields:
+            if field not in factura_dict:
+                return jsonify({'success': False, 'message': f'Campo {field} faltante en factura'}), 400
+        
+        print(f"📊 Detalles: {len(factura_dict['detalles'])} items")
         
         # Generar PDF
-        pdf_path = generar_pdf_factura(factura_data)
-        
-        print(f"✅ PDF generado en: {pdf_path}")  # Debug
+        pdf_path = generar_pdf_factura(factura_dict)
         
         # Enviar archivo para descarga
         return send_file(
@@ -144,9 +150,9 @@ def generar_pdf_factura_route(id_factura):
         )
         
     except Exception as e:
-        print(f"❌ Error al generar PDF: {str(e)}")  # Debug
         import traceback
-        print(f"📋 Traceback: {traceback.format_exc()}")  # Debug
+        print(f"❌ ERROR al generar PDF: {str(e)}")
+        print(traceback.format_exc())
         return jsonify({'success': False, 'message': f'Error al generar PDF: {str(e)}'}), 500
 
 @app.route('/generar-pdf-analisis-ventas', methods=['POST'])
@@ -167,7 +173,7 @@ def generar_pdf_analisis_ventas_route():
         # Enviar archivo para descarga
         return send_file(
             pdf_path,
-            as_achment=True,
+            as_attachment=True,
             download_name=f"analisis_ventas_{fecha_inicio}_{fecha_fin}.pdf".replace('/', '-'),
             mimetype='application/pdf'
         )
@@ -175,6 +181,129 @@ def generar_pdf_analisis_ventas_route():
     except Exception as e:
         return jsonify({'success': False, 'message': f'Error al generar PDF: {str(e)}'}), 500
 
+# Rutas de diagnóstico y debug
+@app.route('/debug-facturas', methods=['GET'])
+def debug_facturas():
+    """Muestra todas las facturas disponibles"""
+    try:
+        facturas = Factura.obtener_todas()
+        result = {
+            'total_facturas': len(facturas),
+            'facturas': []
+        }
+        
+        for factura in facturas:
+            factura_info = {
+                'id': factura.id,
+                'nitCliente': factura.nit_cliente,
+                'fechaEmision': factura.fecha_emision.strftime('%d/%m/%Y'),
+                'montoTotal': factura.monto_total,
+                'detalles_count': len(factura.detalles)
+            }
+            result['facturas'].append(factura_info)
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/debug-factura/<int:id_factura>', methods=['GET'])
+def debug_factura(id_factura):
+    """Ruta temporal para depurar la estructura de una factura"""
+    try:
+        print(f"🔍 Debug factura ID: {id_factura}")
+        
+        # Método 1: Usar obtener_todas
+        facturas_todas = Factura.obtener_todas()
+        factura_encontrada = None
+        
+        for factura in facturas_todas:
+            if factura.id == id_factura:
+                factura_encontrada = factura
+                break
+        
+        result = {
+            'total_facturas': len(facturas_todas),
+            'factura_encontrada': factura_encontrada is not None,
+            'factura_id_buscado': id_factura
+        }
+        
+        if factura_encontrada:
+            result['factura_info'] = {
+                'id': factura_encontrada.id,
+                'nitCliente': factura_encontrada.nit_cliente,
+                'fechaEmision': factura_encontrada.fecha_emision.strftime('%d/%m/%Y'),
+                'montoTotal': factura_encontrada.monto_total,
+                'detalles_count': len(factura_encontrada.detalles),
+                'tiene_to_dict': hasattr(factura_encontrada, 'to_dict')
+            }
+            
+            # Listar IDs de todas las facturas disponibles
+            result['facturas_disponibles'] = [f.id for f in facturas_todas]
+        
+        return jsonify(result)
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/debug-pdf-factura/<int:id_factura>', methods=['GET'])
+def debug_pdf_factura(id_factura):
+    """Prueba la generación de PDF sin descargar"""
+    try:
+        print(f"=== PRUEBA PDF PARA FACTURA {id_factura} ===")
+        
+        # Buscar factura
+        facturas_todas = Factura.obtener_todas()
+        factura_encontrada = None
+        
+        for factura in facturas_todas:
+            if factura.id == id_factura:
+                factura_encontrada = factura
+                break
+        
+        if not factura_encontrada:
+            return jsonify({'success': False, 'message': f'Factura {id_factura} no encontrada'}), 404
+        
+        # Convertir a diccionario
+        factura_dict = factura_encontrada.to_dict()
+        
+        # Validar estructura
+        required_fields = ['id', 'nitCliente', 'fechaEmision', 'montoTotal', 'detalles']
+        for field in required_fields:
+            if field not in factura_dict:
+                return jsonify({'success': False, 'message': f'Campo {field} faltante'}), 400
+        
+        # Probar generación de PDF
+        pdf_path = generar_pdf_factura(factura_dict)
+        
+        return jsonify({
+            'success': True,
+            'message': 'PDF generado exitosamente',
+            'pdf_path': pdf_path,
+            'factura': {
+                'id': factura_dict['id'],
+                'nitCliente': factura_dict['nitCliente'],
+                'fechaEmision': factura_dict['fechaEmision'],
+                'montoTotal': factura_dict['montoTotal'],
+                'detalles_count': len(factura_dict['detalles'])
+            }
+        })
+        
+    except Exception as e:
+        import traceback
+        return jsonify({
+            'success': False,
+            'message': f'Error: {str(e)}',
+            'traceback': traceback.format_exc()
+        }), 500
+
 if __name__ == '__main__':
     print("=== INICIANDO SERVIDOR BACKEND ===")
+    print("=== RUTAS DISPONIBLES ===")
+    print("GET  /debug-facturas          - Lista todas las facturas")
+    print("GET  /debug-factura/<id>      - Depura una factura específica")
+    print("GET  /debug-pdf-factura/<id>  - Prueba generación de PDF")
+    print("GET  /generar-pdf-factura/<id> - Descarga PDF de factura")
+    print("POST /generar-pdf-analisis-ventas - Genera PDF de análisis")
+    print("================================")
     app.run(debug=True, host='0.0.0.0', port=5000)

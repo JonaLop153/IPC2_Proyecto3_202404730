@@ -2,354 +2,206 @@
 <database>
   <recursos>
     <recurso id="1">
-      <nombre>Núcleos de CPU</nombre>
-      <abreviatura>CPU</abreviatura>
-      <metrica>Unidades</metrica>
-      <tipo>Hardware</tipo>
-      <valorXhora>1.2</valorXhora>
+      <nombre>Memoria de Acceso Aleatorio</nombre>
+      <abreviatura>RAM</abreviatura>
+      <metrica>Gb</metrica>
+      <tipo>HARDWARE</tipo>
+      <valorXhora>40.0</valorXhora>
     </recurso>
     <recurso id="2">
-      <nombre>Memoria RAM</nombre>
-      <abreviatura>RAM</abreviatura>
-      <metrica>GiB</metrica>
-      <tipo>Hardware</tipo>
-      <valorXhora>0.75</valorXhora>
+      <nombre>Unidad Central de Procesamiento</nombre>
+      <abreviatura>CPU</abreviatura>
+      <metrica>Núcleos</metrica>
+      <tipo>HARDWARE</tipo>
+      <valorXhora>50.0</valorXhora>
     </recurso>
     <recurso id="3">
-      <nombre>Almacenamiento SSD</nombre>
+      <nombre>Disco Duro Sólido</nombre>
       <abreviatura>SSD</abreviatura>
-      <metrica>GB</metrica>
-      <tipo>Hardware</tipo>
-      <valorXhora>0.1</valorXhora>
-    </recurso>
-    <recurso id="4">
-      <nombre>Sistema Operativo Linux</nombre>
-      <abreviatura>Linux</abreviatura>
-      <metrica>Licencia</metrica>
-      <tipo>Software</tipo>
-      <valorXhora>0.05</valorXhora>
+      <metrica>Gb</metrica>
+      <tipo>HARDWARE</tipo>
+      <valorXhora>30.0</valorXhora>
     </recurso>
   </recursos>
   <categorias>
     <categoria id="1">
-      <nombre>Máquinas Virtuales para Desarrollo</nombre>
-      <descripcion>Configuraciones optimizadas para entornos de desarrollo y pruebas</descripcion>
-      <cargaTrabajo>Desarrollo de software, testing y debugging</cargaTrabajo>
-    </categoria>
-    <categoria id="2">
-      <nombre>Máquinas Virtuales Económicas</nombre>
-      <descripcion>Configuraciones económicas para proyectos pequeños</descripcion>
-      <cargaTrabajo>Aplicaciones web pequeñas, sitios de baja demanda</cargaTrabajo>
+      <nombre>Categoria 1</nombre>
+      <descripcion>Configuraciones de alta carga</descripcion>
+      <cargaTrabajo>Alta</cargaTrabajo>
     </categoria>
   </categorias>
   <configuraciones>
     <configuracion id="1">
-      <nombre>Dev-Básica</nombre>
-      <descripcion>Configuración básica para desarrolladores</descripcion>
+      <nombre>C1C1</nombre>
+      <descripcion>Configuración alta</descripcion>
       <idCategoria>1</idCategoria>
       <recursosConfiguracion>
-        <recurso id="1">2.0</recurso>
-        <recurso id="2">4.0</recurso>
-        <recurso id="3">50.0</recurso>
-        <recurso id="4">1.0</recurso>
+        <recurso id="1">16.0</recurso>
+        <recurso id="2">8.0</recurso>
       </recursosConfiguracion>
     </configuracion>
     <configuracion id="2">
-      <nombre>Dev-Avanzada</nombre>
-      <descripcion>Configuración avanzada para desarrollo intensivo</descripcion>
+      <nombre>C1C2</nombre>
+      <descripcion>Configuración baja</descripcion>
       <idCategoria>1</idCategoria>
       <recursosConfiguracion>
-        <recurso id="1">4.0</recurso>
-        <recurso id="2">8.0</recurso>
-        <recurso id="3">100.0</recurso>
-        <recurso id="4">1.0</recurso>
-      </recursosConfiguracion>
-    </configuracion>
-    <configuracion id="3">
-      <nombre>Eco-Básica</nombre>
-      <descripcion>Configuración económica básica</descripcion>
-      <idCategoria>2</idCategoria>
-      <recursosConfiguracion>
-        <recurso id="1">1.0</recurso>
         <recurso id="2">2.0</recurso>
-        <recurso id="3">25.0</recurso>
-        <recurso id="4">1.0</recurso>
+        <recurso id="3">50.0</recurso>
       </recursosConfiguracion>
     </configuracion>
   </configuraciones>
   <clientes>
-    <cliente nit="12345-6">
-      <nombre>Empresa Tech Solutions S.A.</nombre>
-      <usuario>techsolutions</usuario>
-      <clave>clave123</clave>
-      <direccion>Ciudad de Guatemala, Zona 10</direccion>
-      <correoElectronico>contacto@techsolutions.com</correoElectronico>
-    </cliente>
-    <cliente nit="67890-K">
-      <nombre>Startup Innovadora Ltda.</nombre>
-      <usuario>startupinnov</usuario>
-      <clave>innov2024</clave>
-      <direccion>Antigua Guatemala, Sacatepéquez</direccion>
-      <correoElectronico>info@startupinnov.com</correoElectronico>
+    <cliente nit="32644-5">
+      <nombre>ipc</nombre>
+      <usuario>prueba</usuario>
+      <clave>proyecto</clave>
+      <direccion>Direccion del cliente</direccion>
+      <correoElectronico>eMailCliente</correoElectronico>
     </cliente>
   </clientes>
   <instancias>
     <instancia id="1">
-      <idCliente>12345-6</idCliente>
+      <idCliente>32644-5</idCliente>
       <idConfiguracion>1</idConfiguracion>
-      <nombre>Servidor Desarrollo Principal</nombre>
-      <fechaInicio>15/10/2024</fechaInicio>
-      <estado>Vigente</estado>
+      <nombre>Instancia Uno</nombre>
+      <fechaInicio>26/02/2009</fechaInicio>
+      <estado>CANCELADA</estado>
     </instancia>
     <instancia id="2">
-      <idCliente>12345-6</idCliente>
+      <idCliente>32644-5</idCliente>
       <idConfiguracion>2</idConfiguracion>
-      <nombre>Servidor Testing</nombre>
-      <fechaInicio>20/10/2024</fechaInicio>
-      <estado>Vigente</estado>
-    </instancia>
-    <instancia id="3">
-      <idCliente>67890-K</idCliente>
-      <idConfiguracion>3</idConfiguracion>
-      <nombre>Sitio Web Principal</nombre>
-      <fechaInicio>01/11/2024</fechaInicio>
-      <estado>Vigente</estado>
+      <nombre>Instancia Dos</nombre>
+      <fechaInicio>26/02/2003</fechaInicio>
+      <estado>VIGENTE</estado>
     </instancia>
   </instancias>
   <consumos>
-    <consumo idInstancia="1" nitCliente="12345-6">
-      <tiempo>5.5</tiempo>
-      <fechaHora>25/10/2024 09:30</fechaHora>
+    <consumo idInstancia="2" nitCliente="32644-5">
+      <tiempo>6.2</tiempo>
+      <fechaHora>15/06/2005 08:30</fechaHora>
     </consumo>
-    <consumo idInstancia="1" nitCliente="12345-6">
-      <tiempo>3.25</tiempo>
-      <fechaHora>25/10/2024 14:15</fechaHora>
+    <consumo idInstancia="2" nitCliente="32644-5">
+      <tiempo>1.0</tiempo>
+      <fechaHora>19/07/2004 15:14</fechaHora>
     </consumo>
-    <consumo idInstancia="2" nitCliente="12345-6">
-      <tiempo>2.0</tiempo>
-      <fechaHora>25/10/2024 10:00</fechaHora>
+    <consumo idInstancia="2" nitCliente="32644-5">
+      <tiempo>18.5</tiempo>
+      <fechaHora>14/08/2003 12:45</fechaHora>
     </consumo>
-    <consumo idInstancia="3" nitCliente="67890-K">
-      <tiempo>8.0</tiempo>
-      <fechaHora>25/10/2024 08:00</fechaHora>
+    <consumo idInstancia="2" nitCliente="32644-5">
+      <tiempo>5.7</tiempo>
+      <fechaHora>03/05/2008 09:00</fechaHora>
     </consumo>
-    <consumo idInstancia="3" nitCliente="67890-K">
-      <tiempo>4.5</tiempo>
-      <fechaHora>25/10/2024 16:30</fechaHora>
+    <consumo idInstancia="2" nitCliente="32644-5">
+      <tiempo>9.2</tiempo>
+      <fechaHora>21/11/2005 20:16</fechaHora>
     </consumo>
   </consumos>
   <facturas>
-    <factura id="1761363129597">
-      <nitCliente>12345-6</nitCliente>
+    <factura id="1761369922426">
+      <nitCliente>32644-5</nitCliente>
       <fechaEmision>24/10/2025</fechaEmision>
-      <montoTotal>133.1375</montoTotal>
+      <montoTotal>64960.0</montoTotal>
       <detalles>
         <detalle>
-          <idInstancia>1</idInstancia>
-          <nombreInstancia>Servidor Desarrollo Principal</nombreInstancia>
-          <idRecurso>1</idRecurso>
-          <nombreRecurso>Núcleos de CPU</nombreRecurso>
-          <cantidad>2.0</cantidad>
-          <tiempoConsumido>5.5</tiempoConsumido>
-          <costoUnitario>1.2</costoUnitario>
-          <costoTotal>13.2</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>1</idInstancia>
-          <nombreInstancia>Servidor Desarrollo Principal</nombreInstancia>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
           <idRecurso>2</idRecurso>
-          <nombreRecurso>Memoria RAM</nombreRecurso>
-          <cantidad>4.0</cantidad>
-          <tiempoConsumido>5.5</tiempoConsumido>
-          <costoUnitario>0.75</costoUnitario>
-          <costoTotal>16.5</costoTotal>
+          <nombreRecurso>Unidad Central de Procesamiento</nombreRecurso>
+          <cantidad>2.0</cantidad>
+          <tiempoConsumido>6.2</tiempoConsumido>
+          <costoUnitario>50.0</costoUnitario>
+          <costoTotal>620.0</costoTotal>
         </detalle>
         <detalle>
-          <idInstancia>1</idInstancia>
-          <nombreInstancia>Servidor Desarrollo Principal</nombreInstancia>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
           <idRecurso>3</idRecurso>
-          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <nombreRecurso>Disco Duro Sólido</nombreRecurso>
           <cantidad>50.0</cantidad>
-          <tiempoConsumido>5.5</tiempoConsumido>
-          <costoUnitario>0.1</costoUnitario>
-          <costoTotal>27.5</costoTotal>
+          <tiempoConsumido>6.2</tiempoConsumido>
+          <costoUnitario>30.0</costoUnitario>
+          <costoTotal>9300.0</costoTotal>
         </detalle>
         <detalle>
-          <idInstancia>1</idInstancia>
-          <nombreInstancia>Servidor Desarrollo Principal</nombreInstancia>
-          <idRecurso>4</idRecurso>
-          <nombreRecurso>Sistema Operativo Linux</nombreRecurso>
-          <cantidad>1.0</cantidad>
-          <tiempoConsumido>5.5</tiempoConsumido>
-          <costoUnitario>0.05</costoUnitario>
-          <costoTotal>0.275</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>1</idInstancia>
-          <nombreInstancia>Servidor Desarrollo Principal</nombreInstancia>
-          <idRecurso>1</idRecurso>
-          <nombreRecurso>Núcleos de CPU</nombreRecurso>
-          <cantidad>2.0</cantidad>
-          <tiempoConsumido>3.25</tiempoConsumido>
-          <costoUnitario>1.2</costoUnitario>
-          <costoTotal>7.8</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>1</idInstancia>
-          <nombreInstancia>Servidor Desarrollo Principal</nombreInstancia>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
           <idRecurso>2</idRecurso>
-          <nombreRecurso>Memoria RAM</nombreRecurso>
-          <cantidad>4.0</cantidad>
-          <tiempoConsumido>3.25</tiempoConsumido>
-          <costoUnitario>0.75</costoUnitario>
-          <costoTotal>9.75</costoTotal>
+          <nombreRecurso>Unidad Central de Procesamiento</nombreRecurso>
+          <cantidad>2.0</cantidad>
+          <tiempoConsumido>1.0</tiempoConsumido>
+          <costoUnitario>50.0</costoUnitario>
+          <costoTotal>100.0</costoTotal>
         </detalle>
         <detalle>
-          <idInstancia>1</idInstancia>
-          <nombreInstancia>Servidor Desarrollo Principal</nombreInstancia>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
           <idRecurso>3</idRecurso>
-          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
+          <nombreRecurso>Disco Duro Sólido</nombreRecurso>
           <cantidad>50.0</cantidad>
-          <tiempoConsumido>3.25</tiempoConsumido>
-          <costoUnitario>0.1</costoUnitario>
-          <costoTotal>16.25</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>1</idInstancia>
-          <nombreInstancia>Servidor Desarrollo Principal</nombreInstancia>
-          <idRecurso>4</idRecurso>
-          <nombreRecurso>Sistema Operativo Linux</nombreRecurso>
-          <cantidad>1.0</cantidad>
-          <tiempoConsumido>3.25</tiempoConsumido>
-          <costoUnitario>0.05</costoUnitario>
-          <costoTotal>0.1625</costoTotal>
+          <tiempoConsumido>1.0</tiempoConsumido>
+          <costoUnitario>30.0</costoUnitario>
+          <costoTotal>1500.0</costoTotal>
         </detalle>
         <detalle>
           <idInstancia>2</idInstancia>
-          <nombreInstancia>Servidor Testing</nombreInstancia>
-          <idRecurso>1</idRecurso>
-          <nombreRecurso>Núcleos de CPU</nombreRecurso>
-          <cantidad>4.0</cantidad>
-          <tiempoConsumido>2.0</tiempoConsumido>
-          <costoUnitario>1.2</costoUnitario>
-          <costoTotal>9.6</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>2</idInstancia>
-          <nombreInstancia>Servidor Testing</nombreInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
           <idRecurso>2</idRecurso>
-          <nombreRecurso>Memoria RAM</nombreRecurso>
-          <cantidad>8.0</cantidad>
-          <tiempoConsumido>2.0</tiempoConsumido>
-          <costoUnitario>0.75</costoUnitario>
-          <costoTotal>12.0</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>2</idInstancia>
-          <nombreInstancia>Servidor Testing</nombreInstancia>
-          <idRecurso>3</idRecurso>
-          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
-          <cantidad>100.0</cantidad>
-          <tiempoConsumido>2.0</tiempoConsumido>
-          <costoUnitario>0.1</costoUnitario>
-          <costoTotal>20.0</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>2</idInstancia>
-          <nombreInstancia>Servidor Testing</nombreInstancia>
-          <idRecurso>4</idRecurso>
-          <nombreRecurso>Sistema Operativo Linux</nombreRecurso>
-          <cantidad>1.0</cantidad>
-          <tiempoConsumido>2.0</tiempoConsumido>
-          <costoUnitario>0.05</costoUnitario>
-          <costoTotal>0.1</costoTotal>
-        </detalle>
-      </detalles>
-    </factura>
-    <factura id="1761363129616">
-      <nitCliente>67890-K</nitCliente>
-      <fechaEmision>24/10/2025</fechaEmision>
-      <montoTotal>65.625</montoTotal>
-      <detalles>
-        <detalle>
-          <idInstancia>3</idInstancia>
-          <nombreInstancia>Sitio Web Principal</nombreInstancia>
-          <idRecurso>1</idRecurso>
-          <nombreRecurso>Núcleos de CPU</nombreRecurso>
-          <cantidad>1.0</cantidad>
-          <tiempoConsumido>8.0</tiempoConsumido>
-          <costoUnitario>1.2</costoUnitario>
-          <costoTotal>9.6</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>3</idInstancia>
-          <nombreInstancia>Sitio Web Principal</nombreInstancia>
-          <idRecurso>2</idRecurso>
-          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <nombreRecurso>Unidad Central de Procesamiento</nombreRecurso>
           <cantidad>2.0</cantidad>
-          <tiempoConsumido>8.0</tiempoConsumido>
-          <costoUnitario>0.75</costoUnitario>
-          <costoTotal>12.0</costoTotal>
+          <tiempoConsumido>18.5</tiempoConsumido>
+          <costoUnitario>50.0</costoUnitario>
+          <costoTotal>1850.0</costoTotal>
         </detalle>
         <detalle>
-          <idInstancia>3</idInstancia>
-          <nombreInstancia>Sitio Web Principal</nombreInstancia>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
           <idRecurso>3</idRecurso>
-          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
-          <cantidad>25.0</cantidad>
-          <tiempoConsumido>8.0</tiempoConsumido>
-          <costoUnitario>0.1</costoUnitario>
-          <costoTotal>20.0</costoTotal>
+          <nombreRecurso>Disco Duro Sólido</nombreRecurso>
+          <cantidad>50.0</cantidad>
+          <tiempoConsumido>18.5</tiempoConsumido>
+          <costoUnitario>30.0</costoUnitario>
+          <costoTotal>27750.0</costoTotal>
         </detalle>
         <detalle>
-          <idInstancia>3</idInstancia>
-          <nombreInstancia>Sitio Web Principal</nombreInstancia>
-          <idRecurso>4</idRecurso>
-          <nombreRecurso>Sistema Operativo Linux</nombreRecurso>
-          <cantidad>1.0</cantidad>
-          <tiempoConsumido>8.0</tiempoConsumido>
-          <costoUnitario>0.05</costoUnitario>
-          <costoTotal>0.4</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>3</idInstancia>
-          <nombreInstancia>Sitio Web Principal</nombreInstancia>
-          <idRecurso>1</idRecurso>
-          <nombreRecurso>Núcleos de CPU</nombreRecurso>
-          <cantidad>1.0</cantidad>
-          <tiempoConsumido>4.5</tiempoConsumido>
-          <costoUnitario>1.2</costoUnitario>
-          <costoTotal>5.3999999999999995</costoTotal>
-        </detalle>
-        <detalle>
-          <idInstancia>3</idInstancia>
-          <nombreInstancia>Sitio Web Principal</nombreInstancia>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
           <idRecurso>2</idRecurso>
-          <nombreRecurso>Memoria RAM</nombreRecurso>
+          <nombreRecurso>Unidad Central de Procesamiento</nombreRecurso>
           <cantidad>2.0</cantidad>
-          <tiempoConsumido>4.5</tiempoConsumido>
-          <costoUnitario>0.75</costoUnitario>
-          <costoTotal>6.75</costoTotal>
+          <tiempoConsumido>5.7</tiempoConsumido>
+          <costoUnitario>50.0</costoUnitario>
+          <costoTotal>570.0</costoTotal>
         </detalle>
         <detalle>
-          <idInstancia>3</idInstancia>
-          <nombreInstancia>Sitio Web Principal</nombreInstancia>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
           <idRecurso>3</idRecurso>
-          <nombreRecurso>Almacenamiento SSD</nombreRecurso>
-          <cantidad>25.0</cantidad>
-          <tiempoConsumido>4.5</tiempoConsumido>
-          <costoUnitario>0.1</costoUnitario>
-          <costoTotal>11.25</costoTotal>
+          <nombreRecurso>Disco Duro Sólido</nombreRecurso>
+          <cantidad>50.0</cantidad>
+          <tiempoConsumido>5.7</tiempoConsumido>
+          <costoUnitario>30.0</costoUnitario>
+          <costoTotal>8550.0</costoTotal>
         </detalle>
         <detalle>
-          <idInstancia>3</idInstancia>
-          <nombreInstancia>Sitio Web Principal</nombreInstancia>
-          <idRecurso>4</idRecurso>
-          <nombreRecurso>Sistema Operativo Linux</nombreRecurso>
-          <cantidad>1.0</cantidad>
-          <tiempoConsumido>4.5</tiempoConsumido>
-          <costoUnitario>0.05</costoUnitario>
-          <costoTotal>0.225</costoTotal>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
+          <idRecurso>2</idRecurso>
+          <nombreRecurso>Unidad Central de Procesamiento</nombreRecurso>
+          <cantidad>2.0</cantidad>
+          <tiempoConsumido>9.2</tiempoConsumido>
+          <costoUnitario>50.0</costoUnitario>
+          <costoTotal>919.9999999999999</costoTotal>
+        </detalle>
+        <detalle>
+          <idInstancia>2</idInstancia>
+          <nombreInstancia>Instancia Dos</nombreInstancia>
+          <idRecurso>3</idRecurso>
+          <nombreRecurso>Disco Duro Sólido</nombreRecurso>
+          <cantidad>50.0</cantidad>
+          <tiempoConsumido>9.2</tiempoConsumido>
+          <costoUnitario>30.0</costoUnitario>
+          <costoTotal>13799.999999999998</costoTotal>
         </detalle>
       </detalles>
     </factura>

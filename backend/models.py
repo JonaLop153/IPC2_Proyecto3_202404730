@@ -577,6 +577,15 @@ class Factura(ModeloBase):
         import random
         return int(time.time() * 1000) + random.randint(100, 999)  # ✅ También necesita datetime aquí
     
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'nitCliente': self.nit_cliente,
+            'fechaEmision': self.fecha_emision.strftime('%d/%m/%Y'),
+            'montoTotal': self.monto_total,
+            'detalles': self.detalles
+        }
+
     def guardar(self):
         root = self._obtener_root()
         facturas = root.find('facturas')

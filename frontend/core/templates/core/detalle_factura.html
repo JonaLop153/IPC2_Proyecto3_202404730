@@ -48,9 +48,9 @@
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5>Detalle de Factura #{{ factura.id }}</h5>
             <div>
-                <a href="{% url 'descargar_pdf_factura' factura.id %}" class="btn btn-danger">
-                    📄 Descargar PDF
-                </a>
+                <a href="{% url 'descargar_pdf_factura' factura.id %}" class="btn btn-danger" target="_blank">
+    📄 Descargar PDF
+</a>
             </div>
         </div>
         <div class="card-body">

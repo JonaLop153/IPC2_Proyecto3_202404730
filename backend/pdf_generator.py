@@ -40,10 +40,10 @@ def generar_pdf_factura(factura_data):
     
     # Información de la factura
     info_data = [
-        [f"<b>Número de Factura:</b>", f"#{factura_data['id']}"],
-        [f"<b>NIT Cliente:</b>", factura_data['nitCliente']],
-        [f"<b>Fecha de Emisión:</b>", factura_data['fechaEmision']],
-        [f"<b>Monto Total:</b>", f"Q{factura_data['montoTotal']:,.2f}"]
+        ["<b>Número de Factura:</b>", f"#{factura_data['id']}"],
+        ["<b>NIT Cliente:</b>", factura_data['nitCliente']],
+        ["<b>Fecha de Emisión:</b>", factura_data['fechaEmision']],
+        ["<b>Monto Total:</b>", f"Q{factura_data['montoTotal']:,.2f}"]
     ]
     
     info_table = Table(info_data, colWidths=[2*inch, 3*inch])
@@ -120,8 +120,8 @@ def generar_pdf_analisis_ventas(fecha_inicio, fecha_fin, datos_analisis):
     
     # Resumen
     resumen_data = [
-        [f"<b>Total de Ingresos:</b>", f"Q{datos_analisis['total_ingresos']:,.2f}"],
-        [f"<b>Total de Facturas:</b>", f"{datos_analisis['total_facturas']}"]
+        ["<b>Total de Ingresos:</b>", f"Q{datos_analisis['total_ingresos']:,.2f}"],
+        ["<b>Total de Facturas:</b>", f"{datos_analisis['total_facturas']}"]
     ]
     
     resumen_table = Table(resumen_data, colWidths=[2*inch, 2*inch])

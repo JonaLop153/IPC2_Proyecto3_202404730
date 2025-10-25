@@ -32,20 +32,14 @@
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary">Generar Análisis</button>
+                {% if hay_datos %}
+                <button type="submit" formaction="{% url 'descargar_pdf_analisis' %}" class="btn btn-success">
+                    📄 Descargar PDF
+                </button>
+                {% endif %}
             </form>
         </div>
     </div>
-
-    {% if hay_datos %}
-<form method="post" action="{% url 'descargar_pdf_analisis' %}" class="d-inline">
-    {% csrf_token %}
-    <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
-    <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
-    <button type="submit" class="btn btn-success">
-        📄 Descargar PDF
-    </button>
-</form>
-{% endif %}
 
     {% if fecha_inicio and fecha_fin %}
     <div class="card">
@@ -85,11 +79,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for categoria, ingreso in categorias_ingresos %}
+                        {% for item in categorias_ingresos %}
                         <tr>
-                            <td>{{ categoria }}</td>
-                            <td>${{ ingreso|floatformat:2 }}</td>
-                            <td>{{ ingreso|divisibleby:total_ingresos|default:0|floatformat:1 }}%</td>
+                            <td>{{ item.0 }}</td>
+                            <td>${{ item.1|floatformat:2 }}</td>
+                            <td>{{ item.2 }}%</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -108,11 +102,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for configuracion, ingreso in configuraciones_ingresos %}
+                        {% for item in configuraciones_ingresos %}
                         <tr>
-                            <td>{{ configuracion }}</td>
-                            <td>${{ ingreso|floatformat:2 }}</td>
-                            <td>{{ ingreso|divisibleby:total_ingresos|default:0|floatformat:1 }}%</td>
+                            <td>{{ item.0 }}</td>
+                            <td>${{ item.1|floatformat:2 }}</td>
+                            <td>{{ item.2 }}%</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -131,11 +125,11 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for recurso, ingreso in recursos_ingresos %}
+                        {% for item in recursos_ingresos %}
                         <tr>
-                            <td>{{ recurso }}</td>
-                            <td>${{ ingreso|floatformat:2 }}</td>
-                            <td>{{ ingreso|divisibleby:total_ingresos|default:0|floatformat:1 }}%</td>
+                            <td>{{ item.0 }}</td>
+                            <td>${{ item.1|floatformat:2 }}</td>
+                            <td>{{ item.2 }}%</td>
                         </tr>
                         {% endfor %}
                     </tbody>
@@ -143,7 +137,7 @@
             </div>
             {% else %}
             <div class="alert alert-warning">
-                No hay facturas en el rango de fechas seleccionado.
+                {{ message|default:"No hay facturas en el rango de fechas seleccionado." }}
             </div>
             {% endif %}
         </div>
