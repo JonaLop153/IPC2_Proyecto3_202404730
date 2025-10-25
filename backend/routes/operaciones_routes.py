@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from models import Recurso, Categoria, Configuracion, Cliente, Instancia, RecursoConfiguracion
-from utils import extraer_fecha
+from utils import extraer_fecha  #
 
 def crear_recurso():
     try:

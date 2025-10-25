@@ -1,8 +1,7 @@
 from flask import request, jsonify
 import xml.etree.ElementTree as ET
 from models import Consumo
-from utils import extraer_fecha_hora, limpiar_xml # ✅ Importar desde utils
-
+from utils import extraer_fecha_hora, limpiar_xml
 def consumo():
     try:
         print("=== INICIANDO PROCESAMIENTO CONSUMO ===")

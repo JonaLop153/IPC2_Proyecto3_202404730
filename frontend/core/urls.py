@@ -11,5 +11,7 @@ urlpatterns = [
     path('detalle-factura/', views.detalle_factura, name='detalle_factura'),
     path('analisis-ventas/', views.analisis_ventas, name='analisis_ventas'),
     path('ayuda/', views.ayuda, name='ayuda'),
+    path('descargar-pdf-factura/<int:id_factura>/', views.descargar_pdf_factura, name='descargar_pdf_factura'),
+    path('descargar-pdf-analisis/', views.descargar_pdf_analisis, name='descargar_pdf_analisis'),
     #  NUEVA RUTA
 ]

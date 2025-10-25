@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request, jsonify, send_file
 from routes.configuracion_routes import configurar
 from routes.consumo_routes import consumo
 from routes.operaciones_routes import (
@@ -12,6 +12,17 @@ from routes.consultas_routes import (
     obtener_factura, obtener_instancia, obtener_configuracion,
     obtener_categoria, obtener_recursos_configuracion
 )
+from pdf_generator import generar_pdf_factura, generar_pdf_analisis_ventas
+import os
+
+# ✅ CORREGIDO: Importar desde el archivo pdf_generator directamente
+try:
+    from pdf_generator import generar_pdf_factura, generar_pdf_analisis_ventas
+except ImportError:
+    # Si falla, intentar desde utils
+    from backend.pdf_generator import generar_pdf_factura, generar_pdf_analisis_ventas
+
+import os
 
 app = Flask(__name__)
 
@@ -98,6 +109,62 @@ def obtener_categoria_route(id_categoria):
 @app.route('/recursos-configuracion/<int:id_configuracion>', methods=['GET'])
 def obtener_recursos_configuracion_route(id_configuracion):
     return obtener_recursos_configuracion(id_configuracion)
+
+# PDF Routes
+@app.route('/generar-pdf-factura/<int:id_factura>', methods=['GET'])
+def generar_pdf_factura_route(id_factura):
+    """Genera y descarga el PDF de una factura"""
+    try:
+        # Obtener datos de la factura
+        factura_data = obtener_factura(id_factura)
+        if not factura_data:
+            return jsonify({'success': False, 'message': 'Factura no encontrada'}), 404
+        
+        # Convertir a dict si es necesario
+        if hasattr(factura_data, 'to_dict'):
+            factura_dict = factura_data.to_dict()
+        else:
+            factura_dict = factura_data
+        
+        # Generar PDF
+        pdf_path = generar_pdf_factura(factura_dict)
+        
+        # Enviar archivo para descarga
+        return send_file(
+            pdf_path,
+            as_attachment=True,
+            download_name=f"factura_{id_factura}.pdf",
+            mimetype='application/pdf'
+        )
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error al generar PDF: {str(e)}'}), 500
+
+@app.route('/generar-pdf-analisis-ventas', methods=['POST'])
+def generar_pdf_analisis_ventas_route():
+    """Genera y descarga el PDF de análisis de ventas"""
+    try:
+        data = request.get_json()
+        fecha_inicio = data.get('fecha_inicio')
+        fecha_fin = data.get('fecha_fin')
+        datos_analisis = data.get('datos_analisis')
+        
+        if not all([fecha_inicio, fecha_fin, datos_analisis]):
+            return jsonify({'success': False, 'message': 'Datos incompletos'}), 400
+        
+        # Generar PDF
+        pdf_path = generar_pdf_analisis_ventas(fecha_inicio, fecha_fin, datos_analisis)
+        
+        # Enviar archivo para descarga
+        return send_file(
+            pdf_path,
+            as_achment=True,
+            download_name=f"analisis_ventas_{fecha_inicio}_{fecha_fin}.pdf".replace('/', '-'),
+            mimetype='application/pdf'
+        )
+        
+    except Exception as e:
+        return jsonify({'success': False, 'message': f'Error al generar PDF: {str(e)}'}), 500
 
 if __name__ == '__main__':
     print("=== INICIANDO SERVIDOR BACKEND ===")

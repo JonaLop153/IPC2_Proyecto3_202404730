@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 import requests
 from datetime import datetime
 from .forms import (
@@ -21,12 +21,10 @@ def enviar_mensaje_configuracion(request):
         if form.is_valid():
             xml_file = request.FILES['xml_file']
             try:
-                # Leer el contenido como bytes
                 xml_content = xml_file.read()
                 if not xml_content.strip():
                     context = {'form': form, 'error': 'El archivo XML está vacío.'}
                 else:
-                    # Enviar como cuerpo crudo (bytes)
                     response = requests.post(
                         'http://localhost:5000/configurar',
                         data=xml_content,
@@ -100,7 +98,7 @@ def operaciones_sistema(request):
             if result.get('success'):
                 context['datos_sistema'] = result['data']
     except:
-        pass  # Si falla, no mostrar datos
+        pass
     
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -121,7 +119,6 @@ def operaciones_sistema(request):
                 context['error'] = f'Error al conectar con el backend: {str(e)}'
         
         elif action == 'consultar':
-            # Los datos ya se cargan al inicio de la función
             pass
         
         elif action == 'crear_recurso':
@@ -140,10 +137,8 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearRecurso', json=data)
                     result = response.json()
                     
-                    # ✅ CORREGIDO: Manejo correcto de la respuesta
                     if result.get('success'):
                         context['message'] = result.get('message', 'Recurso creado exitosamente')
-                        # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
@@ -170,10 +165,8 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearCategoria', json=data)
                     result = response.json()
                     
-                    # ✅ CORREGIDO: Manejo correcto de la respuesta
                     if result.get('success'):
                         context['message'] = result.get('message', 'Categoría creada exitosamente')
-                        # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
@@ -200,10 +193,8 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearConfiguracion', json=data)
                     result = response.json()
                     
-                    # ✅ CORREGIDO: Manejo correcto de la respuesta
                     if result.get('success'):
                         context['message'] = result.get('message', 'Configuración creada exitosamente')
-                        # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
@@ -232,10 +223,8 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearCliente', json=data)
                     result = response.json()
                     
-                    # ✅ CORREGIDO: Manejo correcto de la respuesta
                     if result.get('success'):
                         context['message'] = result.get('message', 'Cliente creado exitosamente')
-                        # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
@@ -260,7 +249,6 @@ def operaciones_sistema(request):
                     'estado': form.cleaned_data['estado'],
                 }
                 
-                # Solo agregar fechaFinal si la instancia está cancelada
                 if form.cleaned_data['estado'] == 'Cancelada' and form.cleaned_data.get('fechaFinal'):
                     data['fechaFinal'] = form.cleaned_data['fechaFinal']
                 
@@ -268,10 +256,8 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/crearInstancia', json=data)
                     result = response.json()
                     
-                    # ✅ CORREGIDO: Manejo correcto de la respuesta
                     if result.get('success'):
                         context['message'] = result.get('message', 'Instancia creada exitosamente')
-                        # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
@@ -297,10 +283,8 @@ def operaciones_sistema(request):
                     response = requests.post(f'{BACKEND_URL}/cancelarInstancia', json=data)
                     result = response.json()
                     
-                    # ✅ CORREGIDO: Manejo correcto de la respuesta
                     if result.get('success'):
                         context['message'] = result.get('message', 'Instancia cancelada exitosamente')
-                        # Recargar datos
                         response = requests.get(f'{BACKEND_URL}/consultarDatos')
                         if response.status_code == 200:
                             result_data = response.json()
@@ -320,7 +304,6 @@ def operaciones_sistema(request):
                 
                 if result.get('success'):
                     context['message'] = result.get('message', 'Consumos duplicados eliminados')
-                    # Recargar datos
                     response = requests.get(f'{BACKEND_URL}/consultarDatos')
                     if response.status_code == 200:
                         result_data = response.json()
@@ -331,7 +314,6 @@ def operaciones_sistema(request):
             except Exception as e:
                 context['error'] = f'Error al conectar con el backend: {str(e)}'
     
-    # Mostrar formularios para operaciones
     context.update({
         'crear_recurso_form': CrearRecursoForm(),
         'crear_categoria_form': CrearCategoriaForm(),
@@ -381,17 +363,6 @@ def proceso_facturacion(request):
     return render(request, 'core/facturacion.html', context)
 
 def reportes_pdf(request):
-    # Esta vista será para seleccionar el tipo de reporte
-    if request.method == 'POST':
-        reporte_type = request.POST.get('reporte_type')
-        
-        if reporte_type == 'detalle_factura':
-            # Redirigir a la vista de detalle de factura
-            return redirect('detalle_factura')
-        elif reporte_type == 'analisis_ventas':
-            # Redirigir a la vista de análisis de ventas
-            return redirect('analisis_ventas')
-    
     return render(request, 'core/reportes.html')
 
 def detalle_factura(request):
@@ -415,7 +386,6 @@ def detalle_factura(request):
         except Exception as e:
             context = {'error': f'Error al conectar con el backend: {str(e)}'}
     else:
-        # Obtener todas las facturas para mostrar en el formulario
         try:
             response = requests.get(f'{BACKEND_URL}/facturas')
             result = response.json()
@@ -437,9 +407,7 @@ def analisis_ventas(request):
             fecha_inicio = form.cleaned_data['fecha_inicio']
             fecha_fin = form.cleaned_data['fecha_fin']
             
-            # Obtener datos para análisis
             try:
-                # Primero obtener todas las facturas en el rango
                 response = requests.get(f'{BACKEND_URL}/facturas')
                 result = response.json()
                 
@@ -448,57 +416,77 @@ def analisis_ventas(request):
                     facturas_rango = []
                     
                     for factura in facturas:
-                        fecha_emision = datetime.strptime(factura['fechaEmision'], '%d/%m/%Y')
+                        fecha_emision_str = factura['fechaEmision']
+                        fecha_emision = datetime.strptime(fecha_emision_str, '%d/%m/%Y').date()
+                        
                         if fecha_inicio <= fecha_emision <= fecha_fin:
                             facturas_rango.append(factura)
                     
-                    # Análisis por categorías y configuraciones
-                    categorias_ingresos = {}
-                    configuraciones_ingresos = {}
-                    recursos_ingresos = {}
-                    
-                    for factura in facturas_rango:
-                        for detalle in factura['detalles']:
-                            # Obtener configuración
-                            instancia = get_instancia_by_id(detalle['id_instancia'])
-                            if instancia:
-                                configuracion = get_configuracion_by_id(instancia['idConfiguracion'])
-                                if configuracion:
-                                    categoria = get_categoria_by_id(configuracion['idCategoria'])
-                                    
-                                    # Categorías
-                                    if categoria:
-                                        cat_nombre = categoria['nombre']
-                                        if cat_nombre not in categorias_ingresos:
-                                            categorias_ingresos[cat_nombre] = 0
-                                        categorias_ingresos[cat_nombre] += detalle['costo_total']
-                                    
-                                    # Configuraciones
-                                    conf_nombre = configuracion['nombre']
-                                    if conf_nombre not in configuraciones_ingresos:
-                                        configuraciones_ingresos[conf_nombre] = 0
-                                    configuraciones_ingresos[conf_nombre] += detalle['costo_total']
-                            
-                            # Recursos
-                            recurso_nombre = detalle['nombre_recurso']
-                            if recurso_nombre not in recursos_ingresos:
-                                recursos_ingresos[recurso_nombre] = 0
-                            recursos_ingresos[recurso_nombre] += detalle['costo_total']
-                    
-                    # Ordenar por ingresos
-                    categorias_ingresos_sorted = sorted(categorias_ingresos.items(), key=lambda x: x[1], reverse=True)
-                    configuraciones_ingresos_sorted = sorted(configuraciones_ingresos.items(), key=lambda x: x[1], reverse=True)
-                    recursos_ingresos_sorted = sorted(recursos_ingresos.items(), key=lambda x: x[1], reverse=True)
-                    
-                    context = {
-                        'form': form,
-                        'fecha_inicio': fecha_inicio,
-                        'fecha_fin': fecha_fin,
-                        'categorias_ingresos': categorias_ingresos_sorted,
-                        'configuraciones_ingresos': configuraciones_ingresos_sorted,
-                        'recursos_ingresos': recursos_ingresos_sorted,
-                        'total_ingresos': sum([f['montoTotal'] for f in facturas_rango])
-                    }
+                    if facturas_rango:
+                        categorias_ingresos = {}
+                        configuraciones_ingresos = {}
+                        recursos_ingresos = {}
+                        
+                        for factura in facturas_rango:
+                            for detalle in factura['detalles']:
+                                instancia = get_instancia_by_id(detalle['id_instancia'])
+                                if instancia:
+                                    configuracion = get_configuracion_by_id(instancia['idConfiguracion'])
+                                    if configuracion:
+                                        categoria = get_categoria_by_id(configuracion['idCategoria'])
+                                        
+                                        if categoria:
+                                            cat_nombre = categoria['nombre']
+                                            if cat_nombre not in categorias_ingresos:
+                                                categorias_ingresos[cat_nombre] = 0
+                                            categorias_ingresos[cat_nombre] += detalle['costo_total']
+                                        
+                                        conf_nombre = configuracion['nombre']
+                                        if conf_nombre not in configuraciones_ingresos:
+                                            configuraciones_ingresos[conf_nombre] = 0
+                                        configuraciones_ingresos[conf_nombre] += detalle['costo_total']
+                                
+                                recurso_nombre = detalle['nombre_recurso']
+                                if recurso_nombre not in recursos_ingresos:
+                                    recursos_ingresos[recurso_nombre] = 0
+                                recursos_ingresos[recurso_nombre] += detalle['costo_total']
+                        
+                        total_ingresos_valor = sum([f['montoTotal'] for f in facturas_rango])
+                        
+                        categorias_con_porcentaje = []
+                        for categoria, ingreso in sorted(categorias_ingresos.items(), key=lambda x: x[1], reverse=True):
+                            porcentaje = (ingreso / total_ingresos_valor * 100) if total_ingresos_valor > 0 else 0
+                            categorias_con_porcentaje.append((categoria, ingreso, round(porcentaje, 1)))
+                        
+                        configuraciones_con_porcentaje = []
+                        for configuracion, ingreso in sorted(configuraciones_ingresos.items(), key=lambda x: x[1], reverse=True):
+                            porcentaje = (ingreso / total_ingresos_valor * 100) if total_ingresos_valor > 0 else 0
+                            configuraciones_con_porcentaje.append((configuracion, ingreso, round(porcentaje, 1)))
+                        
+                        recursos_con_porcentaje = []
+                        for recurso, ingreso in sorted(recursos_ingresos.items(), key=lambda x: x[1], reverse=True):
+                            porcentaje = (ingreso / total_ingresos_valor * 100) if total_ingresos_valor > 0 else 0
+                            recursos_con_porcentaje.append((recurso, ingreso, round(porcentaje, 1)))
+                        
+                        context = {
+                            'form': form,
+                            'fecha_inicio': fecha_inicio.strftime('%d/%m/%Y'),
+                            'fecha_fin': fecha_fin.strftime('%d/%m/%Y'),
+                            'categorias_ingresos': categorias_con_porcentaje,
+                            'configuraciones_ingresos': configuraciones_con_porcentaje,
+                            'recursos_ingresos': recursos_con_porcentaje,
+                            'total_ingresos': total_ingresos_valor,
+                            'total_facturas': len(facturas_rango),
+                            'hay_datos': True
+                        }
+                    else:
+                        context = {
+                            'form': form,
+                            'fecha_inicio': fecha_inicio.strftime('%d/%m/%Y'),
+                            'fecha_fin': fecha_fin.strftime('%d/%m/%Y'),
+                            'hay_datos': False,
+                            'message': 'No hay facturas en el rango de fechas seleccionado.'
+                        }
                 else:
                     context = {'form': form, 'error': result.get('message', 'Error al obtener datos')}
             except Exception as e:
@@ -512,7 +500,6 @@ def analisis_ventas(request):
     return render(request, 'core/analisis_ventas.html', context)
 
 def ayuda(request):
-    # Información del estudiante
     estudiante_info = {
         'nombre': 'Jonathan Gabriel López Reyes',
         'carnet': '202404730',
@@ -522,27 +509,16 @@ def ayuda(request):
         'curso': 'Introducción a la Programación y a la Computación II',
     }
     
-    # Documentación del programa
     documentacion = """
     Sistema de Facturación de Infraestructura en la Nube - Tecnologías Chapinas, S.A.
     
-    Este sistema permite gestionar la infraestructura en la nube de Tecnologías Chapinas, S.A., 
-    incluyendo la creación de recursos, categorías, configuraciones, clientes e instancias, 
-    así como el procesamiento de consumos y la generación de facturas.
-    
-    Funcionalidades principales:
-    1. Envío de mensajes de configuración (XML)
-    2. Envío de mensajes de consumo (XML)
-    3. Operaciones del sistema (crear, consultar, eliminar)
-    4. Proceso de facturación periódica
-    5. Generación de reportes en PDF
     
     Arquitectura:
     - Frontend: Django (MVT)
     - Backend: Flask (API REST)
     - Almacenamiento: XML (base de datos)
     
-    Para más información, consulte la documentación completa en el repositorio del proyecto.
+    Para más información, consulte la documentación completa en el repositorio del proyecto: https://github.com/JonaLop153/IPC2_Proyecto3_202404730.
     """
     
     context = {
@@ -552,14 +528,142 @@ def ayuda(request):
     
     return render(request, 'core/ayuda.html', context)
 
-# Funciones auxiliares para obtener datos desde el backend
+def descargar_pdf_factura(request, id_factura):
+    """Descarga el PDF de una factura específica"""
+    try:
+        response = requests.get(f'{BACKEND_URL}/generar-pdf-factura/{id_factura}')
+        
+        if response.status_code == 200:
+            pdf_response = HttpResponse(
+                response.content,
+                content_type='application/pdf'
+            )
+            pdf_response['Content-Disposition'] = f'attachment; filename="factura_{id_factura}.pdf"'
+            return pdf_response
+        else:
+            error_data = response.json()
+            return HttpResponse(f"Error: {error_data.get('message', 'Error desconocido')}", status=400)
+            
+    except Exception as e:
+        return HttpResponse(f"Error al generar PDF: {str(e)}", status=500)
+
+def descargar_pdf_analisis(request):
+    """Descarga el PDF de análisis de ventas"""
+    if request.method == 'POST':
+        try:
+            fecha_inicio = request.POST.get('fecha_inicio')
+            fecha_fin = request.POST.get('fecha_fin')
+            
+            form = FechaRangoForm(request.POST)
+            if form.is_valid():
+                fecha_inicio = form.cleaned_data['fecha_inicio']
+                fecha_fin = form.cleaned_data['fecha_fin']
+                
+                response = requests.get(f'{BACKEND_URL}/facturas')
+                result = response.json()
+                
+                if result.get('success'):
+                    facturas = result['facturas']
+                    facturas_rango = []
+                    
+                    for factura in facturas:
+                        fecha_emision_str = factura['fechaEmision']
+                        fecha_emision = datetime.strptime(fecha_emision_str, '%d/%m/%Y').date()
+                        
+                        if fecha_inicio <= fecha_emision <= fecha_fin:
+                            facturas_rango.append(factura)
+                    
+                    if facturas_rango:
+                        categorias_ingresos = {}
+                        configuraciones_ingresos = {}
+                        recursos_ingresos = {}
+                        
+                        for factura in facturas_rango:
+                            for detalle in factura['detalles']:
+                                instancia = get_instancia_by_id(detalle['id_instancia'])
+                                if instancia:
+                                    configuracion = get_configuracion_by_id(instancia['idConfiguracion'])
+                                    if configuracion:
+                                        categoria = get_categoria_by_id(configuracion['idCategoria'])
+                                        
+                                        if categoria:
+                                            cat_nombre = categoria['nombre']
+                                            if cat_nombre not in categorias_ingresos:
+                                                categorias_ingresos[cat_nombre] = 0
+                                            categorias_ingresos[cat_nombre] += detalle['costo_total']
+                                        
+                                        conf_nombre = configuracion['nombre']
+                                        if conf_nombre not in configuraciones_ingresos:
+                                            configuraciones_ingresos[conf_nombre] = 0
+                                        configuraciones_ingresos[conf_nombre] += detalle['costo_total']
+                                
+                                recurso_nombre = detalle['nombre_recurso']
+                                if recurso_nombre not in recursos_ingresos:
+                                    recursos_ingresos[recurso_nombre] = 0
+                                recursos_ingresos[recurso_nombre] += detalle['costo_total']
+                        
+                        total_ingresos_valor = sum([f['montoTotal'] for f in facturas_rango])
+                        
+                        categorias_con_porcentaje = []
+                        for categoria, ingreso in sorted(categorias_ingresos.items(), key=lambda x: x[1], reverse=True):
+                            porcentaje = (ingreso / total_ingresos_valor * 100) if total_ingresos_valor > 0 else 0
+                            categorias_con_porcentaje.append((categoria, ingreso, round(porcentaje, 1)))
+                        
+                        configuraciones_con_porcentaje = []
+                        for configuracion, ingreso in sorted(configuraciones_ingresos.items(), key=lambda x: x[1], reverse=True):
+                            porcentaje = (ingreso / total_ingresos_valor * 100) if total_ingresos_valor > 0 else 0
+                            configuraciones_con_porcentaje.append((configuracion, ingreso, round(porcentaje, 1)))
+                        
+                        recursos_con_porcentaje = []
+                        for recurso, ingreso in sorted(recursos_ingresos.items(), key=lambda x: x[1], reverse=True):
+                            porcentaje = (ingreso / total_ingresos_valor * 100) if total_ingresos_valor > 0 else 0
+                            recursos_con_porcentaje.append((recurso, ingreso, round(porcentaje, 1)))
+                        
+                        datos_analisis = {
+                            'fecha_inicio': fecha_inicio.strftime('%d/%m/%Y'),
+                            'fecha_fin': fecha_fin.strftime('%d/%m/%Y'),
+                            'categorias_ingresos': categorias_con_porcentaje,
+                            'configuraciones_ingresos': configuraciones_con_porcentaje,
+                            'recursos_ingresos': recursos_con_porcentaje,
+                            'total_ingresos': total_ingresos_valor,
+                            'total_facturas': len(facturas_rango)
+                        }
+                        
+                        pdf_response = requests.post(
+                            f'{BACKEND_URL}/generar-pdf-analisis-ventas',
+                            json=datos_analisis
+                        )
+                        
+                        if pdf_response.status_code == 200:
+                            response = HttpResponse(
+                                pdf_response.content,
+                                content_type='application/pdf'
+                            )
+                            response['Content-Disposition'] = f'attachment; filename="analisis_ventas_{fecha_inicio.strftime("%d-%m-%Y")}_{fecha_fin.strftime("%d-%m-%Y")}.pdf"'
+                            return response
+                        else:
+                            error_data = pdf_response.json()
+                            return HttpResponse(f"Error: {error_data.get('message', 'Error al generar PDF')}", status=400)
+                    else:
+                        return HttpResponse("No hay datos para el rango de fechas seleccionado", status=400)
+                else:
+                    return HttpResponse("Error al obtener datos del backend", status=500)
+            else:
+                return HttpResponse("Formulario inválido", status=400)
+                
+        except Exception as e:
+            return HttpResponse(f"Error: {str(e)}", status=500)
+    
+    return HttpResponse("Método no permitido", status=405)
+
+# Funciones auxiliares
 def get_instancia_by_id(id_instancia):
     try:
         response = requests.get(f'{BACKEND_URL}/instancia/{id_instancia}')
         result = response.json()
         if result.get('success'):
             return result['instancia']
-    except Exception:  
+    except Exception:
         return None
 
 def get_configuracion_by_id(id_configuracion):
@@ -568,7 +672,7 @@ def get_configuracion_by_id(id_configuracion):
         result = response.json()
         if result.get('success'):
             return result['configuracion']
-    except Exception:   
+    except Exception:
         return None
 
 def get_categoria_by_id(id_categoria):
@@ -577,5 +681,5 @@ def get_categoria_by_id(id_categoria):
         result = response.json()
         if result.get('success'):
             return result['categoria']
-    except Exception:  
+    except Exception:
         return None

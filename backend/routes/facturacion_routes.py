@@ -1,6 +1,6 @@
 from flask import request, jsonify
 from models import Instancia, Consumo, Factura, Configuracion, Recurso, RecursoConfiguracion
-from utils import extraer_fecha
+from utils import extraer_fecha  # ✅ Desde utils.py
 from datetime import datetime
 
 def generar_factura():

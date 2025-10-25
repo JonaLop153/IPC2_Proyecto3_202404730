@@ -1,8 +1,7 @@
 from flask import request, jsonify
 import xml.etree.ElementTree as ET
 from models import Recurso, Categoria, Configuracion, Cliente, Instancia, RecursoConfiguracion
-from utils import extraer_fecha, limpiar_xml  # ✅ Importar desde utils
-
+from utils import extraer_fecha, limpiar_xml 
 def configurar():
     try:
         print("=== INICIANDO PROCESAMIENTO CONFIGURACIÓN ===")

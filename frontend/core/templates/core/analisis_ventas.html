@@ -36,6 +36,17 @@
         </div>
     </div>
 
+    {% if hay_datos %}
+<form method="post" action="{% url 'descargar_pdf_analisis' %}" class="d-inline">
+    {% csrf_token %}
+    <input type="hidden" name="fecha_inicio" value="{{ fecha_inicio }}">
+    <input type="hidden" name="fecha_fin" value="{{ fecha_fin }}">
+    <button type="submit" class="btn btn-success">
+        📄 Descargar PDF
+    </button>
+</form>
+{% endif %}
+
     {% if fecha_inicio and fecha_fin %}
     <div class="card">
         <div class="card-header">
